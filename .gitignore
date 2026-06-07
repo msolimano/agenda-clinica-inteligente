@@ -1,0 +1,20 @@
+.DS_Store
+
+# Java / Spring Boot
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local environment
+.env
+.env.local
+*.log
+
+# IDE
+.idea/
+.vscode/
