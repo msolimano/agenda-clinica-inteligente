@@ -1,6 +1,6 @@
 import { ArrowLeft, FileArchive } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { deleteClinicalDocument, listPatientDocuments, listPatients, listProfessionals, uploadClinicalDocument } from './documentsApi';
+import { useEffect, useRef, useState } from 'react';
+import { deleteClinicalDocument, listClinicalDocuments, listPatients, listProfessionals, uploadClinicalDocument } from './documentsApi';
 import { DocumentUploadForm } from './DocumentUploadForm';
 import { PatientDocumentList } from './PatientDocumentList';
 import type { ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
@@ -17,37 +17,48 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
   const [documents, setDocuments] = useState<ClinicalDocumentSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const documentsRequestId = useRef(0);
 
   async function loadCatalogs() {
+    setIsLoading(true);
     setError(null);
     try {
       const [patientsResponse, professionalsResponse] = await Promise.all([listPatients(), listProfessionals()]);
       const activePatients = patientsResponse.filter((patient) => patient.status === 'active');
       const activeProfessionals = professionalsResponse.filter((professional) => professional.status === 'active');
+      const initialPatientId = activePatients[0]?.id || '';
       setPatients(activePatients);
       setProfessionals(activeProfessionals);
-      setSelectedPatientId((current) => current || activePatients[0]?.id || '');
+      setSelectedPatientId(initialPatientId);
+      await loadDocuments(initialPatientId);
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible cargar pacientes y profesionales');
+      setIsLoading(false);
     }
   }
 
   async function loadDocuments(patientId = selectedPatientId) {
-    if (!patientId) {
-      setDocuments([]);
-      setIsLoading(false);
-      return;
-    }
-
+    const requestId = documentsRequestId.current + 1;
+    documentsRequestId.current = requestId;
     setIsLoading(true);
     setError(null);
+
     try {
-      const response = await listPatientDocuments(patientId);
+      const response = await listClinicalDocuments(patientId ? { patientId } : {});
+      if (requestId !== documentsRequestId.current) {
+        return;
+      }
       setDocuments(response);
+      setError(null);
     } catch (currentError) {
+      if (requestId !== documentsRequestId.current) {
+        return;
+      }
       setError(currentError instanceof Error ? currentError.message : 'No fue posible cargar documentos');
     } finally {
-      setIsLoading(false);
+      if (requestId === documentsRequestId.current) {
+        setIsLoading(false);
+      }
     }
   }
 
@@ -55,11 +66,10 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
     void loadCatalogs();
   }, []);
 
-  useEffect(() => {
-    if (selectedPatientId) {
-      void loadDocuments(selectedPatientId);
-    }
-  }, [selectedPatientId]);
+  function handlePatientChange(patientId: string) {
+    setSelectedPatientId(patientId);
+    void loadDocuments(patientId);
+  }
 
   async function handleUpload(payload: ClinicalDocumentUploadPayload) {
     setError(null);
@@ -110,7 +120,7 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
             patients={patients}
             professionals={professionals}
             selectedPatientId={selectedPatientId}
-            onPatientChange={setSelectedPatientId}
+            onPatientChange={handlePatientChange}
             onUpload={handleUpload}
           />
         </aside>
