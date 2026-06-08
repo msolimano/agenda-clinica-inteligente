@@ -15,6 +15,10 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: ${DOCUMENT_MAX_FILE_SIZE:20MB}
+      max-request-size: ${DOCUMENT_MAX_REQUEST_SIZE:21MB}
 
 server:
   port: ${SERVER_PORT:8080}
@@ -23,6 +27,13 @@ app:
   storage:
     provider: ${STORAGE_PROVIDER:local}
     local-base-path: ${LOCAL_STORAGE_BASE_PATH:./storage}
+    max-file-size-bytes: ${DOCUMENT_MAX_FILE_SIZE_BYTES:20971520}
+    allowed-mime-types:
+      - application/pdf
+      - image/jpeg
+      - image/png
+      - application/msword
+      - application/vnd.openxmlformats-officedocument.wordprocessingml.document
     s3-bucket: ${AWS_S3_BUCKET:}
     s3-region: ${AWS_REGION:us-east-1}
   openai:
