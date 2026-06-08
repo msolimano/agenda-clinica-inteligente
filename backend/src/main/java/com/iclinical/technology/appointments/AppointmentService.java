@@ -334,6 +334,7 @@ public class AppointmentService {
             appointment.getConfirmedAt(),
             appointment.getCancelledAt(),
             appointment.getNoShowAt(),
+            appointment.isOverbooking(),
             appointment.getCreatedAt(),
             appointment.getUpdatedAt()
         );

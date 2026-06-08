@@ -1,11 +1,12 @@
-package com.iclinical.technology.appointments.dto;
+package com.iclinical.technology.appointments.overbooking.dto;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record AppointmentResponse(
+public record OverbookingResponse(
     UUID id,
     UUID organizationId,
+    UUID appointmentId,
     UUID professionalId,
     String professionalName,
     UUID patientId,
@@ -13,14 +14,9 @@ public record AppointmentResponse(
     Instant startAt,
     Instant endAt,
     String appointmentType,
-    String status,
+    String appointmentStatus,
     String reason,
-    String cancellationReason,
-    UUID rescheduledFromId,
-    Instant confirmedAt,
-    Instant cancelledAt,
-    Instant noShowAt,
-    boolean overbooking,
+    String status,
     Instant createdAt,
     Instant updatedAt
 ) {

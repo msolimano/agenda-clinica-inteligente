@@ -1,27 +1,24 @@
-package com.iclinical.technology.appointments.dto;
+package com.iclinical.technology.appointments.blocks.dto;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
-public record AppointmentResponse(
+public record AgendaBlockResponse(
     UUID id,
     UUID organizationId,
     UUID professionalId,
     String professionalName,
-    UUID patientId,
-    String patientName,
     Instant startAt,
     Instant endAt,
     String appointmentType,
     String status,
     String reason,
     String cancellationReason,
-    UUID rescheduledFromId,
-    Instant confirmedAt,
     Instant cancelledAt,
-    Instant noShowAt,
-    boolean overbooking,
     Instant createdAt,
-    Instant updatedAt
+    Instant updatedAt,
+    List<AffectedAppointmentResponse> affectedAppointments,
+    List<RescheduleSuggestionResponse> rescheduleSuggestions
 ) {
 }

@@ -59,6 +59,9 @@ public class Appointment {
     @Column(name = "no_show_at")
     private Instant noShowAt;
 
+    @Column(name = "is_overbooking", nullable = false)
+    private boolean overbooking = false;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -104,6 +107,8 @@ public class Appointment {
     public void setCancelledAt(Instant cancelledAt) { this.cancelledAt = cancelledAt; }
     public Instant getNoShowAt() { return noShowAt; }
     public void setNoShowAt(Instant noShowAt) { this.noShowAt = noShowAt; }
+    public boolean isOverbooking() { return overbooking; }
+    public void setOverbooking(boolean overbooking) { this.overbooking = overbooking; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

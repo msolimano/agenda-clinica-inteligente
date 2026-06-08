@@ -52,6 +52,12 @@ public class ProfessionalAvailability {
     @Column(nullable = false, length = 30)
     private String status = "active";
 
+    @Column(name = "allows_overbooking", nullable = false)
+    private boolean allowsOverbooking = false;
+
+    @Column(name = "max_overbookings", nullable = false)
+    private int maxOverbookings = 0;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -91,6 +97,10 @@ public class ProfessionalAvailability {
     public void setValidTo(LocalDate validTo) { this.validTo = validTo; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public boolean isAllowsOverbooking() { return allowsOverbooking; }
+    public void setAllowsOverbooking(boolean allowsOverbooking) { this.allowsOverbooking = allowsOverbooking; }
+    public int getMaxOverbookings() { return maxOverbookings; }
+    public void setMaxOverbookings(int maxOverbookings) { this.maxOverbookings = maxOverbookings; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

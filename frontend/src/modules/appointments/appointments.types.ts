@@ -1,6 +1,6 @@
 export type AppointmentStatus = 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show' | 'blocked' | 'deleted';
 export type AppointmentViewMode = 'day' | 'week';
-export type AppointmentType = 'consultation' | 'control' | 'procedure';
+export type AppointmentType = 'consultation' | 'control' | 'procedure' | 'blocked_slot';
 
 export interface ProfessionalOption {
   id: string;
@@ -35,6 +35,7 @@ export interface Appointment {
   confirmedAt: string | null;
   cancelledAt: string | null;
   noShowAt: string | null;
+  overbooking: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -4,11 +4,13 @@ import { ProfessionalsPage } from './modules/professionals/ProfessionalsPage';
 import { PatientsPage } from './modules/patients/PatientsPage';
 import { AppointmentsPage } from './modules/appointments/AppointmentsPage';
 import { WaitingListPage } from './modules/waiting-list/WaitingListPage';
+import { AgendaControlsPage } from './modules/agenda-controls/AgendaControlsPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
 const APPOINTMENTS_ROUTE = '#/appointments';
 const WAITING_LIST_ROUTE = '#/waiting-list';
+const AGENDA_CONTROLS_ROUTE = '#/agenda-controls';
 
 const quickAccessItems = [
   {
@@ -53,6 +55,10 @@ function App() {
 
   if (route === WAITING_LIST_ROUTE) {
     return <WaitingListPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === AGENDA_CONTROLS_ROUTE) {
+    return <AgendaControlsPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {

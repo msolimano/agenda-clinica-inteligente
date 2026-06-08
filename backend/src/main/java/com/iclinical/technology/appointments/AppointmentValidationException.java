@@ -1,7 +1,7 @@
 package com.iclinical.technology.appointments;
 
-class AppointmentValidationException extends RuntimeException {
-    AppointmentValidationException(String message) {
+public class AppointmentValidationException extends RuntimeException {
+    public AppointmentValidationException(String message) {
         super(message);
     }
 }

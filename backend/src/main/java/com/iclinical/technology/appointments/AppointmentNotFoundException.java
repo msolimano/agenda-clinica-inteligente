@@ -1,7 +1,7 @@
 package com.iclinical.technology.appointments;
 
-class AppointmentNotFoundException extends RuntimeException {
-    AppointmentNotFoundException(String message) {
+public class AppointmentNotFoundException extends RuntimeException {
+    public AppointmentNotFoundException(String message) {
         super(message);
     }
 }
