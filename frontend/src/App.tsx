@@ -1,4 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Activity, ArrowRight, Building2, LockKeyhole, Mail, ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
+import { ProfessionalsPage } from './modules/professionals/ProfessionalsPage';
+import { PatientsPage } from './modules/patients/PatientsPage';
+
+const PROFESSIONALS_ROUTE = '#/professionals';
+const PATIENTS_ROUTE = '#/patients';
 
 const quickAccessItems = [
   {
@@ -9,16 +15,37 @@ const quickAccessItems = [
   {
     label: 'Portal Administrativo',
     description: 'Gestión operacional del centro',
-    icon: Building2
+    icon: Building2,
+    targetHash: PROFESSIONALS_ROUTE
   },
   {
     label: 'Portal Paciente',
     description: 'Información y documentos clínicos',
-    icon: UserRound
+    icon: UserRound,
+    targetHash: PATIENTS_ROUTE
   }
 ];
 
 function App() {
+  const [route, setRoute] = useState(window.location.hash);
+
+  useEffect(() => {
+    function handleHashChange() {
+      setRoute(window.location.hash);
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  if (route === PROFESSIONALS_ROUTE) {
+    return <ProfessionalsPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === PATIENTS_ROUTE) {
+    return <PatientsPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
   return (
     <main className="login-page">
       <section className="login-page__brand" aria-label="Identidad I-Clinical Technology">
@@ -99,7 +126,16 @@ function App() {
             const Icon = item.icon;
 
             return (
-              <button className="quick-access__item" key={item.label} type="button">
+              <button
+                className="quick-access__item"
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  if (item.targetHash) {
+                    window.location.hash = item.targetHash;
+                  }
+                }}
+              >
                 <span className="quick-access__icon">
                   <Icon aria-hidden="true" size={20} />
                 </span>
