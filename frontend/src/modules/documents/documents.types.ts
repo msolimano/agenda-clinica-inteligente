@@ -28,6 +28,16 @@ export type AIAnalysisDocumentStatus = AIAnalysisStatus | 'not_requested';
 export type AIConsentStatus = 'active' | 'revoked' | 'deleted' | 'not_requested';
 
 
+export interface AIProviderStatus {
+  activeProvider: 'mock' | 'openai' | string;
+  configured: boolean;
+  modelName: string | null;
+  promptVersion: string;
+  mockAvailable: boolean;
+  openAIConfigured: boolean;
+  message: string;
+}
+
 export interface AIConsent {
   id: string | null;
   organizationId: string;
@@ -87,6 +97,14 @@ export interface AIAnalysisSummary {
   aiConsentId: string | null;
   status: AIAnalysisStatus;
   modelName: string | null;
+  providerName: string | null;
+  providerRequestId: string | null;
+  promptVersion: string | null;
+  inputTokenCount: number | null;
+  outputTokenCount: number | null;
+  totalTokenCount: number | null;
+  latencyMs: number | null;
+  providerErrorCode: string | null;
   clinicalSummary: string | null;
   errorMessage: string | null;
   createdAt: string;

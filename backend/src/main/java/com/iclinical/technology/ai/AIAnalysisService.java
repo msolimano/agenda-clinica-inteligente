@@ -11,6 +11,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -120,23 +121,58 @@ public class AIAnalysisService {
         document.setAiAnalysisStatus("processing");
         try {
             var result = documentAIClient.analyze(document);
-            analysis.setModelName(result.modelName());
-            analysis.setClinicalSummary(result.clinicalSummary());
-            analysis.setResultSummary(result.clinicalSummary());
-            analysis.setRelevantFindings(result.relevantFindings());
-            analysis.setMentionedDiagnoses(result.mentionedDiagnoses());
-            analysis.setMentionedMedications(result.mentionedMedications());
-            analysis.setMentionedAllergies(result.mentionedAllergies());
-            analysis.setRecommendations(result.recommendations());
+            applyProviderResult(analysis, result);
             analysis.setCompletedAt(Instant.now());
             analysis.setStatus("completed");
             document.setAiAnalysisStatus("completed");
+        } catch (DocumentAIProviderException exception) {
+            applyProviderFailure(analysis, exception);
+            analysis.setCompletedAt(Instant.now());
+            analysis.setStatus("failed");
+            document.setAiAnalysisStatus("failed");
         } catch (RuntimeException exception) {
-            analysis.setErrorMessage(exception.getMessage());
+            var status = documentAIClient.status();
+            analysis.setProviderName(status.activeProvider());
+            analysis.setModelName(status.modelName());
+            analysis.setPromptVersion(status.promptVersion());
+            analysis.setProviderErrorCode("unexpected_provider_error");
+            analysis.setProviderMetadata(Map.of("providerConfigured", status.configured()));
+            analysis.setErrorMessage("No fue posible completar el analisis IA");
             analysis.setCompletedAt(Instant.now());
             analysis.setStatus("failed");
             document.setAiAnalysisStatus("failed");
         }
+    }
+
+    private void applyProviderResult(AIAnalysis analysis, DocumentAIResult result) {
+        analysis.setProviderName(result.providerName());
+        analysis.setProviderRequestId(result.providerRequestId());
+        analysis.setPromptVersion(result.promptVersion());
+        analysis.setInputTokenCount(result.inputTokenCount());
+        analysis.setOutputTokenCount(result.outputTokenCount());
+        analysis.setTotalTokenCount(result.totalTokenCount());
+        analysis.setLatencyMs(result.latencyMs());
+        analysis.setProviderErrorCode(result.providerErrorCode());
+        analysis.setProviderMetadata(result.providerMetadata() == null ? Map.of() : result.providerMetadata());
+        analysis.setModelName(result.modelName());
+        analysis.setClinicalSummary(result.clinicalSummary());
+        analysis.setResultSummary(result.clinicalSummary());
+        analysis.setRelevantFindings(result.relevantFindings());
+        analysis.setMentionedDiagnoses(result.mentionedDiagnoses());
+        analysis.setMentionedMedications(result.mentionedMedications());
+        analysis.setMentionedAllergies(result.mentionedAllergies());
+        analysis.setRecommendations(result.recommendations());
+        analysis.setErrorMessage(null);
+    }
+
+    private void applyProviderFailure(AIAnalysis analysis, DocumentAIProviderException exception) {
+        analysis.setProviderName(exception.getProviderName());
+        analysis.setModelName(exception.getModelName());
+        analysis.setPromptVersion(exception.getPromptVersion());
+        analysis.setLatencyMs(exception.getLatencyMs());
+        analysis.setProviderErrorCode(exception.getErrorCode());
+        analysis.setProviderMetadata(exception.getMetadata());
+        analysis.setErrorMessage(exception.getMessage());
     }
 
     private com.iclinical.technology.consents.AIConsent requireActiveConsent(ClinicalDocument document) {
@@ -185,6 +221,14 @@ public class AIAnalysisService {
             analysis.getAnalysisType(),
             analysis.getStatus(),
             analysis.getModelName(),
+            analysis.getProviderName(),
+            analysis.getProviderRequestId(),
+            analysis.getPromptVersion(),
+            analysis.getInputTokenCount(),
+            analysis.getOutputTokenCount(),
+            analysis.getTotalTokenCount(),
+            analysis.getLatencyMs(),
+            analysis.getProviderErrorCode(),
             analysis.getClinicalSummary(),
             nullToEmpty(analysis.getRelevantFindings()),
             nullToEmpty(analysis.getMentionedDiagnoses()),
@@ -208,6 +252,14 @@ public class AIAnalysisService {
             analysis.getAiConsentId(),
             analysis.getStatus(),
             analysis.getModelName(),
+            analysis.getProviderName(),
+            analysis.getProviderRequestId(),
+            analysis.getPromptVersion(),
+            analysis.getInputTokenCount(),
+            analysis.getOutputTokenCount(),
+            analysis.getTotalTokenCount(),
+            analysis.getLatencyMs(),
+            analysis.getProviderErrorCode(),
             analysis.getClinicalSummary(),
             analysis.getErrorMessage(),
             analysis.getCreatedAt(),

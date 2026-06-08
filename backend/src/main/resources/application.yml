@@ -24,6 +24,15 @@ server:
   port: ${SERVER_PORT:8080}
 
 app:
+  ai:
+    provider: ${DOCUMENT_AI_PROVIDER:mock}
+    prompt-version: ${DOCUMENT_AI_PROMPT_VERSION:DOCUMENT-AI-V1}
+    timeout-seconds: ${DOCUMENT_AI_TIMEOUT_SECONDS:45}
+    max-input-bytes: ${DOCUMENT_AI_MAX_INPUT_BYTES:10485760}
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      model: ${OPENAI_DOCUMENT_MODEL:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
   storage:
     provider: ${STORAGE_PROVIDER:local}
     local-base-path: ${LOCAL_STORAGE_BASE_PATH:./storage}

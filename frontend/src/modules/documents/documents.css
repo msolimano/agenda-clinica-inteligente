@@ -249,6 +249,92 @@
   border-color: #f1b7ad;
 }
 
+.ai-provider-panel {
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  background: var(--documents-surface);
+}
+
+.ai-provider-panel__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 18px 18px 0;
+}
+
+.ai-provider-panel__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--documents-blue), var(--documents-teal));
+}
+
+.ai-provider-panel__heading {
+  min-width: 0;
+}
+
+.ai-provider-panel__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.ai-provider-panel__subtitle,
+.ai-provider-panel__meta {
+  margin: 4px 0 0;
+  color: var(--documents-muted);
+  font-size: 0.88rem;
+}
+
+.ai-provider-panel__body {
+  display: grid;
+  gap: 12px;
+  padding: 14px 18px 18px;
+}
+
+.ai-provider-panel__warning,
+.ai-provider-panel__error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.ai-provider-panel__warning {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
+.ai-provider-panel__error {
+  color: var(--documents-red);
+  background: #fff7f5;
+}
+
+.ai-provider-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.ai-provider-status--ready {
+  color: var(--documents-green);
+  background: #eaf7f0;
+}
+
+.ai-provider-status--warning {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
 .document-upload,
 .documents-panel {
   border: 1px solid var(--documents-line);
@@ -523,6 +609,24 @@
 .document-analysis-result {
   display: grid;
   gap: 10px;
+}
+
+.document-analysis-result__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.document-analysis-result__meta span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 8px;
+  color: var(--documents-blue);
+  background: #eef7fb;
+  font-size: 0.76rem;
+  font-weight: 900;
 }
 
 .document-analysis-result__warning {

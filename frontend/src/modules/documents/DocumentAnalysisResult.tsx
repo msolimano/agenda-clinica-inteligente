@@ -15,17 +15,29 @@ function BulletList({ title, items }: { title: string; items: string[] }) {
         <ul>
           {items.map((item) => <li key={item}>{item}</li>)}
         </ul>
-      ) : <p>No registrado en el análisis simulado.</p>}
+      ) : <p>No registrado en el análisis IA.</p>}
     </div>
   );
 }
 
 export function DocumentAnalysisResult({ analysis }: DocumentAnalysisResultProps) {
+  const providerLabel = analysis.providerName === 'openai' ? 'OpenAI' : analysis.providerName === 'mock' ? 'Mock' : 'No informado';
+  const modelLabel = analysis.modelName ?? 'No informado';
+  const promptLabel = analysis.promptVersion ?? 'No informado';
+  const latencyLabel = analysis.latencyMs == null ? 'No informado' : `${analysis.latencyMs} ms`;
+
   return (
     <section className="document-analysis-result" aria-label="Resultado de análisis IA">
       <div className="document-analysis-result__warning">
         <AlertTriangle aria-hidden="true" size={16} />
         {analysis.disclaimer || AI_DISCLAIMER}
+      </div>
+
+      <div className="document-analysis-result__meta">
+        <span>Proveedor: {providerLabel}</span>
+        <span>Modelo: {modelLabel}</span>
+        <span>Prompt: {promptLabel}</span>
+        <span>Latencia: {latencyLabel}</span>
       </div>
 
       <div className="document-analysis-result__group">

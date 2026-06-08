@@ -1,10 +1,11 @@
 import { ArrowLeft, FileArchive } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { acceptPatientAIConsent, deleteClinicalDocument, getPatientAIConsent, listClinicalDocuments, listPatients, listProfessionals, revokePatientAIConsent, uploadClinicalDocument } from './documentsApi';
+import { acceptPatientAIConsent, deleteClinicalDocument, getAIProviderStatus, getPatientAIConsent, listClinicalDocuments, listPatients, listProfessionals, revokePatientAIConsent, uploadClinicalDocument } from './documentsApi';
 import { AIConsentPanel } from './AIConsentPanel';
+import { AIProviderNotice } from './AIProviderNotice';
 import { DocumentUploadForm } from './DocumentUploadForm';
 import { PatientDocumentList } from './PatientDocumentList';
-import type { AIConsent, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
+import type { AIConsent, AIProviderStatus, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
 import './documents.css';
 
 interface DocumentsPageProps {
@@ -17,12 +18,26 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [documents, setDocuments] = useState<ClinicalDocumentSummary[]>([]);
   const [aiConsent, setAIConsent] = useState<AIConsent | null>(null);
+  const [aiProviderStatus, setAIProviderStatus] = useState<AIProviderStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isConsentLoading, setIsConsentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [consentError, setConsentError] = useState<string | null>(null);
+  const [providerError, setProviderError] = useState<string | null>(null);
   const documentsRequestId = useRef(0);
   const consentRequestId = useRef(0);
+
+
+  async function loadAIProviderStatus() {
+    setProviderError(null);
+    try {
+      const response = await getAIProviderStatus();
+      setAIProviderStatus(response);
+    } catch (currentError) {
+      setAIProviderStatus(null);
+      setProviderError(currentError instanceof Error ? currentError.message : 'No fue posible cargar proveedor IA');
+    }
+  }
 
   async function loadCatalogs() {
     setIsLoading(true);
@@ -102,6 +117,7 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
 
   useEffect(() => {
     void loadCatalogs();
+    void loadAIProviderStatus();
   }, []);
 
   function handlePatientChange(patientId: string) {
@@ -205,6 +221,7 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
             onAccept={handleAcceptAIConsent}
             onRevoke={handleRevokeAIConsent}
           />
+          <AIProviderNotice status={aiProviderStatus} error={providerError} />
         </aside>
         <div className="documents-page__main">
           <PatientDocumentList documents={documents} aiConsent={aiConsent} onDelete={handleDelete} onRefresh={() => loadDocuments()} />

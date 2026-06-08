@@ -1,4 +1,4 @@
-import type { AIAnalysis, AIAnalysisStatus, AIAnalysisSummary, AIConsent, ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
+import type { AIAnalysis, AIAnalysisStatus, AIAnalysisSummary, AIConsent, AIProviderStatus, ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
 
 const API_BASE = '/api';
 
@@ -122,4 +122,8 @@ export async function revokePatientAIConsent(patientId: string) {
     method: 'PATCH',
     body: JSON.stringify({ source: 'documents' })
   });
+}
+
+export async function getAIProviderStatus() {
+  return request<AIProviderStatus>('/ai/providers/status');
 }

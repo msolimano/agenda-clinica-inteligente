@@ -13,6 +13,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -55,6 +56,34 @@ public class AIAnalysis {
 
     @Column(name = "model_name", length = 120)
     private String modelName;
+
+    @Column(name = "provider_name", length = 60)
+    private String providerName;
+
+    @Column(name = "provider_request_id", length = 180)
+    private String providerRequestId;
+
+    @Column(name = "prompt_version", length = 60)
+    private String promptVersion;
+
+    @Column(name = "input_token_count")
+    private Integer inputTokenCount;
+
+    @Column(name = "output_token_count")
+    private Integer outputTokenCount;
+
+    @Column(name = "total_token_count")
+    private Integer totalTokenCount;
+
+    @Column(name = "latency_ms")
+    private Integer latencyMs;
+
+    @Column(name = "provider_error_code", length = 120)
+    private String providerErrorCode;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "provider_metadata", columnDefinition = "jsonb")
+    private Map<String, Object> providerMetadata = Map.of();
 
     @Column(name = "source_summary", columnDefinition = "text")
     private String sourceSummary;
@@ -140,6 +169,24 @@ public class AIAnalysis {
     public void setStatus(String status) { this.status = status; }
     public String getModelName() { return modelName; }
     public void setModelName(String modelName) { this.modelName = modelName; }
+    public String getProviderName() { return providerName; }
+    public void setProviderName(String providerName) { this.providerName = providerName; }
+    public String getProviderRequestId() { return providerRequestId; }
+    public void setProviderRequestId(String providerRequestId) { this.providerRequestId = providerRequestId; }
+    public String getPromptVersion() { return promptVersion; }
+    public void setPromptVersion(String promptVersion) { this.promptVersion = promptVersion; }
+    public Integer getInputTokenCount() { return inputTokenCount; }
+    public void setInputTokenCount(Integer inputTokenCount) { this.inputTokenCount = inputTokenCount; }
+    public Integer getOutputTokenCount() { return outputTokenCount; }
+    public void setOutputTokenCount(Integer outputTokenCount) { this.outputTokenCount = outputTokenCount; }
+    public Integer getTotalTokenCount() { return totalTokenCount; }
+    public void setTotalTokenCount(Integer totalTokenCount) { this.totalTokenCount = totalTokenCount; }
+    public Integer getLatencyMs() { return latencyMs; }
+    public void setLatencyMs(Integer latencyMs) { this.latencyMs = latencyMs; }
+    public String getProviderErrorCode() { return providerErrorCode; }
+    public void setProviderErrorCode(String providerErrorCode) { this.providerErrorCode = providerErrorCode; }
+    public Map<String, Object> getProviderMetadata() { return providerMetadata; }
+    public void setProviderMetadata(Map<String, Object> providerMetadata) { this.providerMetadata = providerMetadata; }
     public String getSourceSummary() { return sourceSummary; }
     public void setSourceSummary(String sourceSummary) { this.sourceSummary = sourceSummary; }
     public String getResultSummary() { return resultSummary; }
