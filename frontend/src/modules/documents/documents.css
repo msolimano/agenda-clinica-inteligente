@@ -1,0 +1,336 @@
+:root {
+  --documents-navy: #0d1b2a;
+  --documents-blue: #1e4e8c;
+  --documents-teal: #00b7b3;
+  --documents-green: #2f7d5e;
+  --documents-red: #b42318;
+  --documents-amber: #a15c07;
+  --documents-ink: #17263a;
+  --documents-muted: #5f6f84;
+  --documents-bg: #f6f8fb;
+  --documents-line: #dce5ef;
+  --documents-surface: #ffffff;
+}
+
+.documents-page {
+  min-height: 100vh;
+  padding: 28px;
+  background: var(--documents-bg);
+  color: var(--documents-ink);
+}
+
+.documents-page__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(170px, 230px);
+  gap: 18px;
+  align-items: center;
+  max-width: 1480px;
+  margin: 0 auto 18px;
+}
+
+.documents-page__back,
+.document-upload__submit,
+.document-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.documents-page__back {
+  min-height: 42px;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--documents-line);
+  color: var(--documents-blue);
+  background: #ffffff;
+}
+
+.documents-page__heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.documents-page__mark,
+.document-upload__icon,
+.documents-panel__icon,
+.document-card__icon {
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--documents-blue), var(--documents-teal));
+}
+
+.documents-page__mark {
+  width: 52px;
+  height: 52px;
+}
+
+.documents-page__eyebrow {
+  margin: 0 0 4px;
+  color: var(--documents-teal);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.documents-page__title {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+
+.documents-page__counter {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  color: var(--documents-blue);
+  background: #ffffff;
+}
+
+.documents-page__counter strong {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.documents-page__counter span {
+  color: var(--documents-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.documents-page__alert,
+.documents-page__loading {
+  max-width: 1480px;
+  margin: 0 auto 18px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  color: #7b3f00;
+  background: #fff4e8;
+  font-weight: 700;
+}
+
+.documents-page__loading {
+  color: var(--documents-muted);
+  background: #ffffff;
+}
+
+.documents-page__content {
+  display: grid;
+  grid-template-columns: minmax(360px, 430px) minmax(0, 1fr);
+  gap: 18px;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.document-upload,
+.documents-panel {
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  background: var(--documents-surface);
+}
+
+.document-upload__header,
+.documents-panel__header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 18px 18px 0;
+}
+
+.document-upload__icon,
+.documents-panel__icon,
+.document-card__icon {
+  width: 42px;
+  height: 42px;
+}
+
+.document-upload__title,
+.documents-panel__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.document-upload__subtitle,
+.documents-panel__subtitle {
+  margin: 4px 0 0;
+  color: var(--documents-muted);
+  font-size: 0.88rem;
+}
+
+.document-field {
+  display: grid;
+  gap: 7px;
+  padding: 14px 18px 0;
+  color: var(--documents-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.document-field input,
+.document-field select,
+.document-field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  color: var(--documents-navy);
+  background: #ffffff;
+}
+
+.document-field input,
+.document-field select {
+  min-height: 42px;
+  padding: 0 10px;
+}
+
+.document-field input[type="file"] {
+  padding: 9px 10px;
+}
+
+.document-field textarea {
+  resize: vertical;
+  padding: 10px;
+}
+
+.document-upload__submit {
+  min-height: 44px;
+  gap: 8px;
+  width: calc(100% - 36px);
+  margin: 18px;
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--documents-blue), var(--documents-teal));
+}
+
+.document-upload__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.documents-panel__list {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.documents-panel__empty {
+  margin: 0;
+  padding: 26px 16px;
+  color: var(--documents-muted);
+  text-align: center;
+}
+
+.document-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.document-card__heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.document-card__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.document-card__meta {
+  margin: 0 0 4px;
+  color: var(--documents-muted);
+  font-size: 0.88rem;
+}
+
+.document-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.document-action {
+  min-height: 36px;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--documents-line);
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.document-action--download {
+  color: var(--documents-blue);
+  background: #eef7fb;
+}
+
+.document-action--delete {
+  color: var(--documents-red);
+  background: #fff7f5;
+  border-color: #f1b7ad;
+}
+
+.document-type-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  color: var(--documents-blue);
+  background: #eef7fb;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.document-type-badge--prescription,
+.document-type-badge--medical_order {
+  color: var(--documents-green);
+  background: #eaf7f0;
+}
+
+.document-type-badge--laboratory_exam,
+.document-type-badge--imaging_exam {
+  color: var(--documents-amber);
+  background: #fff4e8;
+}
+
+@media (max-width: 980px) {
+  .documents-page__header,
+  .documents-page__content {
+    grid-template-columns: 1fr;
+  }
+
+  .documents-page__back {
+    width: max-content;
+  }
+}
+
+@media (max-width: 680px) {
+  .documents-page {
+    padding: 18px;
+  }
+
+  .document-card {
+    grid-template-columns: 1fr;
+  }
+
+  .document-card__actions {
+    justify-content: flex-start;
+  }
+}
