@@ -2,6 +2,7 @@ package com.iclinical.technology.ai;
 
 import com.iclinical.technology.ai.dto.AIAnalysisResponse;
 import com.iclinical.technology.ai.dto.AIAnalysisSummaryResponse;
+import com.iclinical.technology.consents.AIConsentService;
 import com.iclinical.technology.documents.ClinicalDocument;
 import com.iclinical.technology.documents.ClinicalDocumentRepository;
 import org.springframework.stereotype.Service;
@@ -24,26 +25,31 @@ public class AIAnalysisService {
     private final AIAnalysisRepository analysisRepository;
     private final ClinicalDocumentRepository documentRepository;
     private final DocumentAIClient documentAIClient;
+    private final AIConsentService consentService;
 
     public AIAnalysisService(
         AIAnalysisRepository analysisRepository,
         ClinicalDocumentRepository documentRepository,
-        DocumentAIClient documentAIClient
+        DocumentAIClient documentAIClient,
+        AIConsentService consentService
     ) {
         this.analysisRepository = analysisRepository;
         this.documentRepository = documentRepository;
         this.documentAIClient = documentAIClient;
+        this.consentService = consentService;
     }
 
     @Transactional
     public AIAnalysisResponse requestAnalysis(UUID documentId) {
         var document = findActiveDocument(documentId);
+        var consent = requireActiveConsent(document);
         ensureDocumentCanBeAnalyzed(document);
 
         var analysis = new AIAnalysis();
         analysis.setOrganizationId(document.getOrganizationId());
         analysis.setPatientId(document.getPatientId());
         analysis.setClinicalDocumentId(document.getId());
+        analysis.setAiConsentId(consent.getId());
         analysis.setAnalysisType(ANALYSIS_TYPE);
         analysis.setStatus("pending");
         analysis.setSourceSummary(sourceSummary(document));
@@ -90,12 +96,14 @@ public class AIAnalysisService {
             throw new AIAnalysisValidationException("Solo se pueden reintentar analisis fallidos");
         }
         var document = findActiveDocument(failedAnalysis.getClinicalDocumentId());
+        var consent = requireActiveConsent(document);
         ensureDocumentCanBeAnalyzed(document);
 
         var retry = new AIAnalysis();
         retry.setOrganizationId(document.getOrganizationId());
         retry.setPatientId(document.getPatientId());
         retry.setClinicalDocumentId(document.getId());
+        retry.setAiConsentId(consent.getId());
         retry.setAnalysisType(ANALYSIS_TYPE);
         retry.setStatus("pending");
         retry.setSourceSummary(sourceSummary(document));
@@ -129,6 +137,11 @@ public class AIAnalysisService {
             analysis.setStatus("failed");
             document.setAiAnalysisStatus("failed");
         }
+    }
+
+    private com.iclinical.technology.consents.AIConsent requireActiveConsent(ClinicalDocument document) {
+        return consentService.findActiveConsent(document.getOrganizationId(), document.getPatientId())
+            .orElseThrow(() -> new AIAnalysisValidationException("El paciente no tiene consentimiento IA activo para analisis documental"));
     }
 
     private void ensureDocumentCanBeAnalyzed(ClinicalDocument document) {
@@ -168,6 +181,7 @@ public class AIAnalysisService {
             analysis.getOrganizationId(),
             analysis.getPatientId(),
             analysis.getClinicalDocumentId(),
+            analysis.getAiConsentId(),
             analysis.getAnalysisType(),
             analysis.getStatus(),
             analysis.getModelName(),
@@ -191,6 +205,7 @@ public class AIAnalysisService {
             analysis.getId(),
             analysis.getPatientId(),
             analysis.getClinicalDocumentId(),
+            analysis.getAiConsentId(),
             analysis.getStatus(),
             analysis.getModelName(),
             analysis.getClinicalSummary(),

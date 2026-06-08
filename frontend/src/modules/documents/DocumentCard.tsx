@@ -3,15 +3,16 @@ import { formatDateTime, formatFileSize } from './documentsDate';
 import { DocumentTypeBadge } from './DocumentTypeBadge';
 import { DownloadAction } from './DownloadAction';
 import { DocumentAnalysisPanel } from './DocumentAnalysisPanel';
-import type { ClinicalDocumentSummary } from './documents.types';
+import type { AIConsent, ClinicalDocumentSummary } from './documents.types';
 
 interface DocumentCardProps {
   document: ClinicalDocumentSummary;
+  aiConsent: AIConsent | null;
   onDelete: (documentId: string) => Promise<void>;
   onRefresh: () => Promise<void>;
 }
 
-export function DocumentCard({ document, onDelete, onRefresh }: DocumentCardProps) {
+export function DocumentCard({ document, aiConsent, onDelete, onRefresh }: DocumentCardProps) {
   return (
     <article className="document-card">
       <div className="document-card__icon"><FileText aria-hidden="true" size={22} /></div>
@@ -31,7 +32,7 @@ export function DocumentCard({ document, onDelete, onRefresh }: DocumentCardProp
         </button>
       </div>
       <div className="document-card__analysis">
-        <DocumentAnalysisPanel documentId={document.id} initialStatus={document.aiAnalysisStatus} onStatusChange={onRefresh} />
+        <DocumentAnalysisPanel documentId={document.id} initialStatus={document.aiAnalysisStatus} aiConsentActive={Boolean(aiConsent?.active)} onStatusChange={onRefresh} />
       </div>
     </article>
   );

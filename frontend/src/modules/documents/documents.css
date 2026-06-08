@@ -130,6 +130,125 @@
   margin: 0 auto;
 }
 
+.documents-page__side {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.ai-consent-panel {
+  border: 1px solid var(--documents-line);
+  border-radius: 8px;
+  background: var(--documents-surface);
+}
+
+.ai-consent-panel__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 18px 18px 0;
+}
+
+.ai-consent-panel__icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--documents-blue), var(--documents-teal));
+}
+
+.ai-consent-panel__heading {
+  min-width: 0;
+}
+
+.ai-consent-panel__title {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.ai-consent-panel__subtitle,
+.ai-consent-panel__meta,
+.ai-consent-panel__empty {
+  margin: 4px 0 0;
+  color: var(--documents-muted);
+  font-size: 0.88rem;
+}
+
+.ai-consent-panel__body {
+  display: grid;
+  gap: 12px;
+  padding: 14px 18px 18px;
+}
+
+.ai-consent-panel__warning,
+.ai-consent-panel__error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.ai-consent-panel__warning {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
+.ai-consent-panel__error {
+  color: var(--documents-red);
+  background: #fff7f5;
+}
+
+.ai-consent-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ai-consent-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  color: var(--documents-muted);
+  background: #eef2f7;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.ai-consent-status--active {
+  color: var(--documents-green);
+  background: #eaf7f0;
+}
+
+.ai-consent-status--revoked,
+.ai-consent-status--not_requested {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
+.ai-consent-status--deleted {
+  color: var(--documents-red);
+  background: #fff7f5;
+}
+
+.document-action--consent-accept {
+  color: var(--documents-green);
+  background: #eaf7f0;
+  border-color: #b8dcc8;
+}
+
+.document-action--consent-revoke {
+  color: var(--documents-red);
+  background: #fff7f5;
+  border-color: #f1b7ad;
+}
+
 .document-upload,
 .documents-panel {
   border: 1px solid var(--documents-line);

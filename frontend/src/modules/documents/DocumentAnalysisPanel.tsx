@@ -9,6 +9,7 @@ import type { AIAnalysis, AIAnalysisDocumentStatus, AIAnalysisSummary } from './
 interface DocumentAnalysisPanelProps {
   documentId: string;
   initialStatus: AIAnalysisDocumentStatus;
+  aiConsentActive: boolean;
   onStatusChange: () => Promise<void>;
 }
 
@@ -28,7 +29,7 @@ function normalizeStatus(status?: string): AIAnalysisDocumentStatus {
   return 'not_requested';
 }
 
-export function DocumentAnalysisPanel({ documentId, initialStatus, onStatusChange }: DocumentAnalysisPanelProps) {
+export function DocumentAnalysisPanel({ documentId, initialStatus, aiConsentActive, onStatusChange }: DocumentAnalysisPanelProps) {
   const [analyses, setAnalyses] = useState<AIAnalysisSummary[]>([]);
   const [selectedAnalysis, setSelectedAnalysis] = useState<AIAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +38,7 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, onStatusChang
   const latestAnalysis = useMemo(() => analyses[0], [analyses]);
   const status = normalizeStatus(latestAnalysis?.status ?? initialStatus);
   const isInProgress = status === 'pending' || status === 'processing';
+  const consentDisabledMessage = 'Requiere consentimiento IA activo';
 
   async function loadAnalyses() {
     setError(null);
@@ -55,6 +57,10 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, onStatusChang
   }, [documentId]);
 
   async function handleRequest() {
+    if (!aiConsentActive) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -70,6 +76,10 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, onStatusChang
   }
 
   async function handleRetry() {
+    if (!aiConsentActive) {
+      return;
+    }
+
     if (!latestAnalysis) {
       return;
     }
@@ -93,11 +103,12 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, onStatusChang
       <div className="document-analysis-panel__header">
         <DocumentAnalysisStatusBadge status={status} />
         <div className="document-analysis-panel__actions">
-          <DocumentAnalysisAction disabled={isLoading || isInProgress} onRequest={handleRequest} />
-          {latestAnalysis?.status === 'failed' ? <DocumentAnalysisRetryButton disabled={isLoading} onRetry={handleRetry} /> : null}
+          <DocumentAnalysisAction disabled={isLoading || isInProgress || !aiConsentActive} title={!aiConsentActive ? consentDisabledMessage : undefined} onRequest={handleRequest} />
+          {latestAnalysis?.status === 'failed' ? <DocumentAnalysisRetryButton disabled={isLoading || !aiConsentActive} onRetry={handleRetry} /> : null}
         </div>
       </div>
 
+      {!aiConsentActive ? <p className="document-analysis-panel__note">Paciente sin consentimiento IA activo. El análisis IA está deshabilitado.</p> : null}
       {error ? <div className="document-analysis-panel__error" role="alert">{error}</div> : null}
       {latestAnalysis?.status === 'failed' ? <p className="document-analysis-panel__note">{latestAnalysis.errorMessage ?? 'El análisis falló.'}</p> : null}
       {selectedAnalysis ? <DocumentAnalysisResult analysis={selectedAnalysis} /> : null}

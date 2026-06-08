@@ -25,6 +25,25 @@ export interface ProfessionalOption {
 
 export type AIAnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'reviewed' | 'rejected' | 'deleted';
 export type AIAnalysisDocumentStatus = AIAnalysisStatus | 'not_requested';
+export type AIConsentStatus = 'active' | 'revoked' | 'deleted' | 'not_requested';
+
+
+export interface AIConsent {
+  id: string | null;
+  organizationId: string;
+  patientId: string;
+  consentType: 'ai_analysis';
+  active: boolean;
+  granted: boolean;
+  consentVersion: string;
+  grantedAt: string | null;
+  revokedAt: string | null;
+  source: string | null;
+  notes: string | null;
+  status: AIConsentStatus;
+  createdAt: string | null;
+  updatedAt: string | null;
+}
 
 export interface ClinicalDocumentSummary {
   id: string;
@@ -65,6 +84,7 @@ export interface AIAnalysisSummary {
   id: string;
   patientId: string;
   clinicalDocumentId: string;
+  aiConsentId: string | null;
   status: AIAnalysisStatus;
   modelName: string | null;
   clinicalSummary: string | null;

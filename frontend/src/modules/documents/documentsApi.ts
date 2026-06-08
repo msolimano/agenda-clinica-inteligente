@@ -1,4 +1,4 @@
-import type { AIAnalysis, AIAnalysisStatus, AIAnalysisSummary, ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
+import type { AIAnalysis, AIAnalysisStatus, AIAnalysisSummary, AIConsent, ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
 
 const API_BASE = '/api';
 
@@ -104,4 +104,22 @@ export async function listAIAnalyses(params: { status?: AIAnalysisStatus; patien
   }
   const suffix = query.toString() ? `?${query.toString()}` : '';
   return request<AIAnalysisSummary[]>(`/ai-analyses${suffix}`);
+}
+
+export async function getPatientAIConsent(patientId: string) {
+  return request<AIConsent>(`/patients/${patientId}/ai-consent`);
+}
+
+export async function acceptPatientAIConsent(patientId: string) {
+  return request<AIConsent>(`/patients/${patientId}/ai-consent`, {
+    method: 'POST',
+    body: JSON.stringify({ source: 'documents' })
+  });
+}
+
+export async function revokePatientAIConsent(patientId: string) {
+  return request<AIConsent>(`/patients/${patientId}/ai-consent/revoke`, {
+    method: 'PATCH',
+    body: JSON.stringify({ source: 'documents' })
+  });
 }

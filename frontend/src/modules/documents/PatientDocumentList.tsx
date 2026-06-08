@@ -1,14 +1,15 @@
 import { FolderOpen } from 'lucide-react';
 import { DocumentCard } from './DocumentCard';
-import type { ClinicalDocumentSummary } from './documents.types';
+import type { AIConsent, ClinicalDocumentSummary } from './documents.types';
 
 interface PatientDocumentListProps {
   documents: ClinicalDocumentSummary[];
+  aiConsent: AIConsent | null;
   onDelete: (documentId: string) => Promise<void>;
   onRefresh: () => Promise<void>;
 }
 
-export function PatientDocumentList({ documents, onDelete, onRefresh }: PatientDocumentListProps) {
+export function PatientDocumentList({ documents, aiConsent, onDelete, onRefresh }: PatientDocumentListProps) {
   return (
     <section className="documents-panel" aria-label="Documentos del paciente">
       <div className="documents-panel__header">
@@ -21,7 +22,7 @@ export function PatientDocumentList({ documents, onDelete, onRefresh }: PatientD
 
       <div className="documents-panel__list">
         {documents.length ? documents.map((document) => (
-          <DocumentCard key={document.id} document={document} onDelete={onDelete} onRefresh={onRefresh} />
+          <DocumentCard key={document.id} document={document} aiConsent={aiConsent} onDelete={onDelete} onRefresh={onRefresh} />
         )) : <p className="documents-panel__empty">No hay documentos clínicos activos.</p>}
       </div>
     </section>

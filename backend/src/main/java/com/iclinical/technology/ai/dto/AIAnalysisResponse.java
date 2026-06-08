@@ -9,6 +9,7 @@ public record AIAnalysisResponse(
     UUID organizationId,
     UUID patientId,
     UUID clinicalDocumentId,
+    UUID aiConsentId,
     String analysisType,
     String status,
     String modelName,

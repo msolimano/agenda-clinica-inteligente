@@ -35,6 +35,9 @@ public class AIAnalysis {
     @Column(name = "clinical_document_id")
     private UUID clinicalDocumentId;
 
+    @Column(name = "ai_consent_id")
+    private UUID aiConsentId;
+
     @Column(name = "clinical_image_id")
     private UUID clinicalImageId;
 
@@ -123,6 +126,8 @@ public class AIAnalysis {
     public void setClinicalRecordId(UUID clinicalRecordId) { this.clinicalRecordId = clinicalRecordId; }
     public UUID getClinicalDocumentId() { return clinicalDocumentId; }
     public void setClinicalDocumentId(UUID clinicalDocumentId) { this.clinicalDocumentId = clinicalDocumentId; }
+    public UUID getAiConsentId() { return aiConsentId; }
+    public void setAiConsentId(UUID aiConsentId) { this.aiConsentId = aiConsentId; }
     public UUID getClinicalImageId() { return clinicalImageId; }
     public void setClinicalImageId(UUID clinicalImageId) { this.clinicalImageId = clinicalImageId; }
     public UUID getRequestedByUserId() { return requestedByUserId; }

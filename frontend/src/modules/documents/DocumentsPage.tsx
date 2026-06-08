@@ -1,9 +1,10 @@
 import { ArrowLeft, FileArchive } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { deleteClinicalDocument, listClinicalDocuments, listPatients, listProfessionals, uploadClinicalDocument } from './documentsApi';
+import { acceptPatientAIConsent, deleteClinicalDocument, getPatientAIConsent, listClinicalDocuments, listPatients, listProfessionals, revokePatientAIConsent, uploadClinicalDocument } from './documentsApi';
+import { AIConsentPanel } from './AIConsentPanel';
 import { DocumentUploadForm } from './DocumentUploadForm';
 import { PatientDocumentList } from './PatientDocumentList';
-import type { ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
+import type { AIConsent, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
 import './documents.css';
 
 interface DocumentsPageProps {
@@ -15,9 +16,13 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
   const [professionals, setProfessionals] = useState<ProfessionalOption[]>([]);
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [documents, setDocuments] = useState<ClinicalDocumentSummary[]>([]);
+  const [aiConsent, setAIConsent] = useState<AIConsent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isConsentLoading, setIsConsentLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [consentError, setConsentError] = useState<string | null>(null);
   const documentsRequestId = useRef(0);
+  const consentRequestId = useRef(0);
 
   async function loadCatalogs() {
     setIsLoading(true);
@@ -30,7 +35,7 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
       setPatients(activePatients);
       setProfessionals(activeProfessionals);
       setSelectedPatientId(initialPatientId);
-      await loadDocuments(initialPatientId);
+      await Promise.all([loadDocuments(initialPatientId), loadAIConsent(initialPatientId)]);
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible cargar pacientes y profesionales');
       setIsLoading(false);
@@ -62,6 +67,39 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
     }
   }
 
+
+  async function loadAIConsent(patientId = selectedPatientId) {
+    const requestId = consentRequestId.current + 1;
+    consentRequestId.current = requestId;
+    setConsentError(null);
+
+    if (!patientId) {
+      setAIConsent(null);
+      setIsConsentLoading(false);
+      return;
+    }
+
+    setIsConsentLoading(true);
+    try {
+      const response = await getPatientAIConsent(patientId);
+      if (requestId !== consentRequestId.current) {
+        return;
+      }
+      setAIConsent(response);
+      setConsentError(null);
+    } catch (currentError) {
+      if (requestId !== consentRequestId.current) {
+        return;
+      }
+      setAIConsent(null);
+      setConsentError(currentError instanceof Error ? currentError.message : 'No fue posible cargar consentimiento IA');
+    } finally {
+      if (requestId === consentRequestId.current) {
+        setIsConsentLoading(false);
+      }
+    }
+  }
+
   useEffect(() => {
     void loadCatalogs();
   }, []);
@@ -69,6 +107,42 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
   function handlePatientChange(patientId: string) {
     setSelectedPatientId(patientId);
     void loadDocuments(patientId);
+    void loadAIConsent(patientId);
+  }
+
+
+  async function handleAcceptAIConsent() {
+    if (!selectedPatientId) {
+      return;
+    }
+
+    setIsConsentLoading(true);
+    setConsentError(null);
+    try {
+      const response = await acceptPatientAIConsent(selectedPatientId);
+      setAIConsent(response);
+    } catch (currentError) {
+      setConsentError(currentError instanceof Error ? currentError.message : 'No fue posible aceptar consentimiento IA');
+    } finally {
+      setIsConsentLoading(false);
+    }
+  }
+
+  async function handleRevokeAIConsent() {
+    if (!selectedPatientId) {
+      return;
+    }
+
+    setIsConsentLoading(true);
+    setConsentError(null);
+    try {
+      const response = await revokePatientAIConsent(selectedPatientId);
+      setAIConsent(response);
+    } catch (currentError) {
+      setConsentError(currentError instanceof Error ? currentError.message : 'No fue posible revocar consentimiento IA');
+    } finally {
+      setIsConsentLoading(false);
+    }
   }
 
   async function handleUpload(payload: ClinicalDocumentUploadPayload) {
@@ -123,9 +197,17 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
             onPatientChange={handlePatientChange}
             onUpload={handleUpload}
           />
+          <AIConsentPanel
+            consent={aiConsent}
+            hasPatient={Boolean(selectedPatientId)}
+            isLoading={isConsentLoading}
+            error={consentError}
+            onAccept={handleAcceptAIConsent}
+            onRevoke={handleRevokeAIConsent}
+          />
         </aside>
         <div className="documents-page__main">
-          <PatientDocumentList documents={documents} onDelete={handleDelete} onRefresh={() => loadDocuments()} />
+          <PatientDocumentList documents={documents} aiConsent={aiConsent} onDelete={handleDelete} onRefresh={() => loadDocuments()} />
         </div>
       </section>
     </main>
