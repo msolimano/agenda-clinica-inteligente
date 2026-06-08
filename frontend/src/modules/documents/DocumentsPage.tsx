@@ -125,7 +125,7 @@ export function DocumentsPage({ onBackToLogin }: DocumentsPageProps) {
           />
         </aside>
         <div className="documents-page__main">
-          <PatientDocumentList documents={documents} onDelete={handleDelete} />
+          <PatientDocumentList documents={documents} onDelete={handleDelete} onRefresh={() => loadDocuments()} />
         </div>
       </section>
     </main>

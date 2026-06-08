@@ -1,4 +1,4 @@
-import type { ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
+import type { AIAnalysis, AIAnalysisStatus, AIAnalysisSummary, ClinicalDocument, ClinicalDocumentSummary, ClinicalDocumentUploadPayload, PatientOption, ProfessionalOption } from './documents.types';
 
 const API_BASE = '/api';
 
@@ -72,4 +72,36 @@ export async function deleteClinicalDocument(id: string) {
 
 export function downloadClinicalDocumentUrl(id: string) {
   return `${API_BASE}/clinical-documents/${id}/download`;
+}
+
+
+export async function requestDocumentAnalysis(documentId: string) {
+  return request<AIAnalysis>(`/clinical-documents/${documentId}/ai-analysis`, { method: 'POST' });
+}
+
+export async function listDocumentAnalyses(documentId: string) {
+  return request<AIAnalysisSummary[]>(`/clinical-documents/${documentId}/ai-analysis`);
+}
+
+export async function getAIAnalysis(id: string) {
+  return request<AIAnalysis>(`/ai-analyses/${id}`);
+}
+
+export async function retryAIAnalysis(id: string) {
+  return request<AIAnalysis>(`/ai-analyses/${id}/retry`, { method: 'POST' });
+}
+
+export async function listAIAnalyses(params: { status?: AIAnalysisStatus; patientId?: string; documentId?: string } = {}) {
+  const query = new URLSearchParams();
+  if (params.status) {
+    query.set('status', params.status);
+  }
+  if (params.patientId) {
+    query.set('patientId', params.patientId);
+  }
+  if (params.documentId) {
+    query.set('documentId', params.documentId);
+  }
+  const suffix = query.toString() ? `?${query.toString()}` : '';
+  return request<AIAnalysisSummary[]>(`/ai-analyses${suffix}`);
 }

@@ -5,9 +5,10 @@ import type { ClinicalDocumentSummary } from './documents.types';
 interface PatientDocumentListProps {
   documents: ClinicalDocumentSummary[];
   onDelete: (documentId: string) => Promise<void>;
+  onRefresh: () => Promise<void>;
 }
 
-export function PatientDocumentList({ documents, onDelete }: PatientDocumentListProps) {
+export function PatientDocumentList({ documents, onDelete, onRefresh }: PatientDocumentListProps) {
   return (
     <section className="documents-panel" aria-label="Documentos del paciente">
       <div className="documents-panel__header">
@@ -20,7 +21,7 @@ export function PatientDocumentList({ documents, onDelete }: PatientDocumentList
 
       <div className="documents-panel__list">
         {documents.length ? documents.map((document) => (
-          <DocumentCard key={document.id} document={document} onDelete={onDelete} />
+          <DocumentCard key={document.id} document={document} onDelete={onDelete} onRefresh={onRefresh} />
         )) : <p className="documents-panel__empty">No hay documentos clínicos activos.</p>}
       </div>
     </section>

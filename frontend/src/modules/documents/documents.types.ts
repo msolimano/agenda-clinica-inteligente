@@ -23,6 +23,9 @@ export interface ProfessionalOption {
   status: string;
 }
 
+export type AIAnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'reviewed' | 'rejected' | 'deleted';
+export type AIAnalysisDocumentStatus = AIAnalysisStatus | 'not_requested';
+
 export interface ClinicalDocumentSummary {
   id: string;
   patientId: string;
@@ -35,6 +38,7 @@ export interface ClinicalDocumentSummary {
   mimeType: string;
   fileSize: number;
   status: string;
+  aiAnalysisStatus: AIAnalysisDocumentStatus;
   createdAt: string;
 }
 
@@ -43,7 +47,7 @@ export interface ClinicalDocument extends ClinicalDocumentSummary {
   description: string | null;
   storagePath: string;
   checksumSha256: string | null;
-  aiAnalysisStatus: string;
+  aiAnalysisStatus: AIAnalysisDocumentStatus;
   updatedAt: string;
 }
 
@@ -54,4 +58,30 @@ export interface ClinicalDocumentUploadPayload {
   title: string;
   description?: string;
   file: File;
+}
+
+
+export interface AIAnalysisSummary {
+  id: string;
+  patientId: string;
+  clinicalDocumentId: string;
+  status: AIAnalysisStatus;
+  modelName: string | null;
+  clinicalSummary: string | null;
+  errorMessage: string | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface AIAnalysis extends AIAnalysisSummary {
+  organizationId: string;
+  analysisType: string;
+  relevantFindings: string[];
+  mentionedDiagnoses: string[];
+  mentionedMedications: string[];
+  mentionedAllergies: string[];
+  recommendations: string | null;
+  startedAt: string | null;
+  updatedAt: string;
+  disclaimer: string;
 }
