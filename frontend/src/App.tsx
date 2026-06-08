@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react';
 import { Activity, ArrowRight, Building2, LockKeyhole, Mail, ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
 import { ProfessionalsPage } from './modules/professionals/ProfessionalsPage';
 import { PatientsPage } from './modules/patients/PatientsPage';
+import { AppointmentsPage } from './modules/appointments/AppointmentsPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
+const APPOINTMENTS_ROUTE = '#/appointments';
 
 const quickAccessItems = [
   {
     label: 'Portal Médico',
     description: 'Agenda, pacientes y atención clínica',
-    icon: Stethoscope
+    icon: Stethoscope,
+    targetHash: APPOINTMENTS_ROUTE
   },
   {
     label: 'Portal Administrativo',
@@ -40,6 +43,10 @@ function App() {
 
   if (route === PROFESSIONALS_ROUTE) {
     return <ProfessionalsPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === APPOINTMENTS_ROUTE) {
+    return <AppointmentsPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {
