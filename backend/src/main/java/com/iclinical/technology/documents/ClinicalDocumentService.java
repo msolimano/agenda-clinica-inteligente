@@ -237,6 +237,7 @@ public class ClinicalDocumentService {
             document.getMimeType(),
             document.getFileSizeBytes() == null ? 0L : document.getFileSizeBytes(),
             document.getStatus(),
+            document.getAiAnalysisStatus(),
             document.getCreatedAt()
         );
     }

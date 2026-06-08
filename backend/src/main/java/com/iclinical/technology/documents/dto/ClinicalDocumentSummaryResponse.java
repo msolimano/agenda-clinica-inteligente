@@ -15,6 +15,7 @@ public record ClinicalDocumentSummaryResponse(
     String mimeType,
     long fileSize,
     String status,
+    String aiAnalysisStatus,
     Instant createdAt
 ) {
 }
