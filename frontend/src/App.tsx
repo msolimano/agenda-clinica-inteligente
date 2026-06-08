@@ -3,10 +3,12 @@ import { Activity, ArrowRight, Building2, LockKeyhole, Mail, ShieldCheck, Stetho
 import { ProfessionalsPage } from './modules/professionals/ProfessionalsPage';
 import { PatientsPage } from './modules/patients/PatientsPage';
 import { AppointmentsPage } from './modules/appointments/AppointmentsPage';
+import { WaitingListPage } from './modules/waiting-list/WaitingListPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
 const APPOINTMENTS_ROUTE = '#/appointments';
+const WAITING_LIST_ROUTE = '#/waiting-list';
 
 const quickAccessItems = [
   {
@@ -47,6 +49,10 @@ function App() {
 
   if (route === APPOINTMENTS_ROUTE) {
     return <AppointmentsPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === WAITING_LIST_ROUTE) {
+    return <WaitingListPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {
