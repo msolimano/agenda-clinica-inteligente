@@ -917,3 +917,287 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.clinical-evolution-panel {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.clinical-evolution-panel__header,
+.clinical-evolution-panel__heading,
+.clinical-evolution-card__header,
+.clinical-evolution-form__header {
+  display: flex;
+  align-items: center;
+}
+
+.clinical-evolution-panel__header {
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--clinical-records-line);
+}
+
+.clinical-evolution-panel__heading {
+  gap: 10px;
+  min-width: 0;
+}
+
+.clinical-evolution-panel__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-records-blue), var(--clinical-records-green));
+}
+
+.clinical-evolution-panel__title,
+.clinical-evolution-form__header h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.clinical-evolution-panel__subtitle,
+.clinical-evolution-panel__note,
+.clinical-evolution-panel__loading,
+.clinical-evolution-timeline__empty,
+.clinical-evolution-form__hint,
+.clinical-evolution-card__date,
+.clinical-evolution-card__trace {
+  margin: 0;
+  color: var(--clinical-records-muted);
+  font-size: 0.88rem;
+}
+
+.clinical-evolution-panel__new,
+.clinical-evolution-form__submit,
+.clinical-evolution-form__close,
+.clinical-evolution-card__edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.clinical-evolution-panel__new,
+.clinical-evolution-form__submit {
+  min-height: 38px;
+  gap: 7px;
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-records-blue), var(--clinical-records-green));
+}
+
+.clinical-evolution-panel__new {
+  padding: 0 12px;
+}
+
+.clinical-evolution-form__submit {
+  padding: 0 14px;
+}
+
+.clinical-evolution-panel__new:disabled,
+.clinical-evolution-form__submit:disabled,
+.clinical-evolution-card__edit:disabled,
+.clinical-evolution-card__status-control select:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.clinical-evolution-panel__error {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #7b3f00;
+  background: #fff4e8;
+  font-weight: 700;
+}
+
+.clinical-evolution-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.clinical-evolution-form__header,
+.clinical-evolution-field--wide,
+.clinical-evolution-form__hint,
+.clinical-evolution-form__submit {
+  grid-column: 1 / -1;
+}
+
+.clinical-evolution-form__header {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.clinical-evolution-form__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--clinical-records-line);
+  color: var(--clinical-records-blue);
+  background: #ffffff;
+}
+
+.clinical-evolution-field {
+  display: grid;
+  gap: 7px;
+  color: var(--clinical-records-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.clinical-evolution-field input,
+.clinical-evolution-field textarea,
+.clinical-evolution-field select,
+.clinical-evolution-card__status-control select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  color: var(--clinical-records-navy);
+  background: #ffffff;
+}
+
+.clinical-evolution-field input,
+.clinical-evolution-field select,
+.clinical-evolution-card__status-control select {
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.clinical-evolution-field textarea {
+  resize: vertical;
+  padding: 10px;
+}
+
+.clinical-evolution-timeline {
+  display: grid;
+  gap: 10px;
+}
+
+.clinical-evolution-card {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.clinical-evolution-card__header {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.clinical-evolution-card__header > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.clinical-evolution-card__edit {
+  min-height: 34px;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--clinical-records-line);
+  color: var(--clinical-records-blue);
+  background: #ffffff;
+}
+
+.clinical-evolution-card__soap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.clinical-evolution-card__soap-block {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.clinical-evolution-card__soap-block h4,
+.clinical-evolution-card__soap-block p,
+.clinical-evolution-card__notes {
+  margin: 0;
+}
+
+.clinical-evolution-card__soap-block h4 {
+  color: var(--clinical-records-blue);
+  font-size: 0.82rem;
+}
+
+.clinical-evolution-card__soap-block p,
+.clinical-evolution-card__notes {
+  color: var(--clinical-records-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.clinical-evolution-card__notes strong {
+  color: var(--clinical-records-ink);
+}
+
+.clinical-evolution-card__status-control {
+  display: grid;
+  gap: 7px;
+  max-width: 260px;
+  color: var(--clinical-records-blue);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.clinical-evolution-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.clinical-evolution-status--draft {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
+.clinical-evolution-status--active {
+  color: var(--clinical-records-blue);
+  background: #eef7fb;
+}
+
+.clinical-evolution-status--corrected {
+  color: var(--clinical-records-green);
+  background: #eaf7f0;
+}
+
+.clinical-evolution-status--cancelled {
+  color: var(--clinical-records-red);
+  background: #fdeceb;
+}
+
+@media (max-width: 760px) {
+  .clinical-evolution-form,
+  .clinical-evolution-card__soap-grid {
+    grid-template-columns: 1fr;
+  }
+}
