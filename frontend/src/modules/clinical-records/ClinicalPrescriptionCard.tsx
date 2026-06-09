@@ -17,11 +17,16 @@ function OptionalLine({ label, value }: { label: string; value: string | null })
 }
 
 export function ClinicalPrescriptionCard({ prescription, disabled, onEdit, onStatusChange }: ClinicalPrescriptionCardProps) {
+  const catalogCode = prescription.medicationCode
+    ? `${prescription.medicationCodeSystem ? `${prescription.medicationCodeSystem}: ` : ''}${prescription.medicationCode}`
+    : null;
+
   return (
     <article className="clinical-prescription-card">
       <div className="clinical-prescription-card__header">
         <div className="clinical-prescription-card__title-wrap">
           <ClinicalPrescriptionStatusBadge status={prescription.prescriptionStatus} />
+          {prescription.medicationCatalogId ? <span className="clinical-prescription-card__diagnosis">Catalogo</span> : null}
           {prescription.diagnosisText ? <span className="clinical-prescription-card__diagnosis">Con diagnostico</span> : null}
         </div>
         <button className="clinical-prescription-card__edit" type="button" disabled={disabled} onClick={() => onEdit(prescription)}>
@@ -34,6 +39,7 @@ export function ClinicalPrescriptionCard({ prescription, disabled, onEdit, onSta
         <h3>{prescription.medicationName}</h3>
         <p><strong>Dosis:</strong> {prescription.dosage}</p>
         <p><strong>Frecuencia:</strong> {prescription.frequency}</p>
+        <OptionalLine label="Codigo" value={catalogCode} />
         <OptionalLine label="Duracion" value={prescription.duration} />
         <OptionalLine label="Via" value={prescription.route} />
         <OptionalLine label="Diagnostico" value={prescription.diagnosisText} />

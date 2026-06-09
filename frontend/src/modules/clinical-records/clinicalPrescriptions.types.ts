@@ -10,6 +10,10 @@ export interface ClinicalPrescription {
   professionalName: string;
   diagnosisId: string | null;
   diagnosisText: string | null;
+  medicationCatalogId: string | null;
+  medicationCode: string | null;
+  medicationCodeSystem: string | null;
+  medicationCodeDisplay: string | null;
   medicationName: string;
   dosage: string;
   frequency: string;
@@ -25,6 +29,7 @@ export interface ClinicalPrescription {
 
 export interface ClinicalPrescriptionPayload {
   diagnosisId?: string | null;
+  medicationCatalogId?: string | null;
   medicationName: string;
   dosage: string;
   frequency: string;

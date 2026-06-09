@@ -1,19 +1,24 @@
 import { Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import { MedicationSearchInput } from '../medications/MedicationSearchInput';
+import type { MedicationCatalog } from '../medications/medications.types';
 import type { ClinicalDiagnosis } from './clinicalDiagnoses.types';
 import type { ClinicalPrescription, ClinicalPrescriptionPayload, ClinicalPrescriptionStatus } from './clinicalPrescriptions.types';
 
 interface ClinicalPrescriptionFormProps {
   prescription: ClinicalPrescription | null;
   diagnoses: ClinicalDiagnosis[];
+  organizationId?: string | null;
   disabled: boolean;
   onCancel: () => void;
   onSubmit: (payload: ClinicalPrescriptionPayload, prescriptionId?: string) => Promise<void>;
 }
 
-export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, onCancel, onSubmit }: ClinicalPrescriptionFormProps) {
+export function ClinicalPrescriptionForm({ prescription, diagnoses, organizationId, disabled, onCancel, onSubmit }: ClinicalPrescriptionFormProps) {
   const [diagnosisId, setDiagnosisId] = useState('');
+  const [medicationCatalogId, setMedicationCatalogId] = useState('');
+  const [selectedMedicationLabel, setSelectedMedicationLabel] = useState<string | null>(null);
   const [medicationName, setMedicationName] = useState('');
   const [dosage, setDosage] = useState('');
   const [frequency, setFrequency] = useState('');
@@ -26,6 +31,8 @@ export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, on
 
   useEffect(() => {
     setDiagnosisId(prescription?.diagnosisId ?? '');
+    setMedicationCatalogId(prescription?.medicationCatalogId ?? '');
+    setSelectedMedicationLabel(prescription?.medicationCatalogId ? prescription.medicationCodeDisplay || prescription.medicationName : null);
     setMedicationName(prescription?.medicationName ?? '');
     setDosage(prescription?.dosage ?? '');
     setFrequency(prescription?.frequency ?? '');
@@ -46,6 +53,7 @@ export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, on
     try {
       await onSubmit({
         diagnosisId: diagnosisId || null,
+        medicationCatalogId: medicationCatalogId || null,
         medicationName,
         dosage,
         frequency,
@@ -57,6 +65,8 @@ export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, on
       }, prescription?.id);
       if (!prescription) {
         setDiagnosisId('');
+        setMedicationCatalogId('');
+        setSelectedMedicationLabel(null);
         setMedicationName('');
         setDosage('');
         setFrequency('');
@@ -69,6 +79,21 @@ export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, on
     } finally {
       setIsSaving(false);
     }
+  }
+
+
+  function handleMedicationSelect(medication: MedicationCatalog) {
+    setMedicationCatalogId(medication.id);
+    setSelectedMedicationLabel(medication.medicationName);
+    setMedicationName(medication.medicationName);
+    if (medication.route) {
+      setRoute(medication.route);
+    }
+  }
+
+  function handleMedicationClear() {
+    setMedicationCatalogId('');
+    setSelectedMedicationLabel(null);
   }
 
   return (
@@ -88,9 +113,17 @@ export function ClinicalPrescriptionForm({ prescription, diagnoses, disabled, on
         </select>
       </label>
 
+      <MedicationSearchInput
+        organizationId={organizationId}
+        disabled={disabled}
+        selectedLabel={selectedMedicationLabel}
+        onSelect={handleMedicationSelect}
+        onClear={handleMedicationClear}
+      />
+
       <label className="clinical-prescription-field clinical-prescription-field--wide">
         Medicamento
-        <textarea value={medicationName} onChange={(event) => setMedicationName(event.target.value)} disabled={disabled} rows={2} required />
+        <textarea value={medicationName} onChange={(event) => { setMedicationName(event.target.value); if (medicationCatalogId) { setMedicationCatalogId(''); setSelectedMedicationLabel(null); } }} disabled={disabled} rows={2} required />
       </label>
 
       <label className="clinical-prescription-field">

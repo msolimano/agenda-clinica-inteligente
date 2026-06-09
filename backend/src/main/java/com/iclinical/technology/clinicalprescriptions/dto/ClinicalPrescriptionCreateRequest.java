@@ -4,6 +4,7 @@ import java.util.UUID;
 
 public record ClinicalPrescriptionCreateRequest(
     UUID diagnosisId,
+    UUID medicationCatalogId,
     String medicationName,
     String dosage,
     String frequency,

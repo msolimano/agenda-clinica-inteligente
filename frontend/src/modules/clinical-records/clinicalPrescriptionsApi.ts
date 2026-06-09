@@ -56,6 +56,7 @@ function normalizePayload(payload: ClinicalPrescriptionPayload) {
   return {
     ...payload,
     diagnosisId: payload.diagnosisId?.trim() || null,
+    medicationCatalogId: payload.medicationCatalogId?.trim() || null,
     medicationName: payload.medicationName.trim(),
     dosage: payload.dosage.trim(),
     frequency: payload.frequency.trim(),

@@ -8,6 +8,8 @@ import com.iclinical.technology.clinicalprescriptions.dto.ClinicalPrescriptionSt
 import com.iclinical.technology.clinicalprescriptions.dto.ClinicalPrescriptionUpdateRequest;
 import com.iclinical.technology.clinicalrecords.ClinicalRecord;
 import com.iclinical.technology.clinicalrecords.ClinicalRecordRepository;
+import com.iclinical.technology.medications.MedicationCatalog;
+import com.iclinical.technology.medications.MedicationCatalogRepository;
 import com.iclinical.technology.patients.PatientRepository;
 import com.iclinical.technology.professionals.ProfessionalRepository;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class ClinicalPrescriptionService {
     private final ClinicalPrescriptionRepository prescriptionRepository;
     private final ClinicalRecordRepository recordRepository;
     private final ClinicalDiagnosisRepository diagnosisRepository;
+    private final MedicationCatalogRepository medicationRepository;
     private final PatientRepository patientRepository;
     private final ProfessionalRepository professionalRepository;
 
@@ -33,12 +36,14 @@ public class ClinicalPrescriptionService {
         ClinicalPrescriptionRepository prescriptionRepository,
         ClinicalRecordRepository recordRepository,
         ClinicalDiagnosisRepository diagnosisRepository,
+        MedicationCatalogRepository medicationRepository,
         PatientRepository patientRepository,
         ProfessionalRepository professionalRepository
     ) {
         this.prescriptionRepository = prescriptionRepository;
         this.recordRepository = recordRepository;
         this.diagnosisRepository = diagnosisRepository;
+        this.medicationRepository = medicationRepository;
         this.patientRepository = patientRepository;
         this.professionalRepository = professionalRepository;
     }
@@ -75,6 +80,7 @@ public class ClinicalPrescriptionService {
     public ClinicalPrescriptionResponse create(UUID recordId, ClinicalPrescriptionCreateRequest request) {
         var record = findEditableRecord(recordId);
         var diagnosis = resolveDiagnosis(request == null ? null : request.diagnosisId(), record);
+        var medication = resolveMedicationCatalog(request == null ? null : request.medicationCatalogId(), record.getOrganizationId(), null);
 
         var prescription = new ClinicalPrescription();
         prescription.setOrganizationId(record.getOrganizationId());
@@ -84,6 +90,7 @@ public class ClinicalPrescriptionService {
         prescription.setDiagnosisId(diagnosis == null ? null : diagnosis.getId());
         applyFields(
             prescription,
+            medication,
             request == null ? null : request.medicationName(),
             request == null ? null : request.dosage(),
             request == null ? null : request.frequency(),
@@ -102,10 +109,12 @@ public class ClinicalPrescriptionService {
         var prescription = findPrescription(id);
         var record = findEditableRecord(prescription.getClinicalRecordId());
         var diagnosis = resolveDiagnosis(request == null ? null : request.diagnosisId(), record);
+        var medication = resolveMedicationCatalog(request == null ? null : request.medicationCatalogId(), record.getOrganizationId(), prescription.getMedicationCatalogId());
 
         prescription.setDiagnosisId(diagnosis == null ? null : diagnosis.getId());
         applyFields(
             prescription,
+            medication,
             request == null ? null : request.medicationName(),
             request == null ? null : request.dosage(),
             request == null ? null : request.frequency(),
@@ -129,6 +138,7 @@ public class ClinicalPrescriptionService {
 
     private void applyFields(
         ClinicalPrescription prescription,
+        MedicationCatalog medication,
         String medicationName,
         String dosage,
         String frequency,
@@ -139,14 +149,39 @@ public class ClinicalPrescriptionService {
         String prescriptionStatus,
         String fallbackPrescriptionStatus
     ) {
-        prescription.setMedicationName(require(medicationName, "Debe indicar el medicamento"));
+        var resolvedMedicationName = clean(medicationName);
+        if (!StringUtils.hasText(resolvedMedicationName) && medication != null) {
+            resolvedMedicationName = medication.getMedicationName();
+        }
+        prescription.setMedicationCatalogId(medication == null ? null : medication.getId());
+        prescription.setMedicationCode(medication == null ? null : medication.getMedicationCode());
+        prescription.setMedicationCodeSystem(medication == null ? null : medication.getMedicationCodeSystem());
+        prescription.setMedicationCodeDisplay(medication == null ? null : medication.getMedicationName());
+        prescription.setMedicationName(require(resolvedMedicationName, "Debe indicar el medicamento"));
         prescription.setDosage(require(dosage, "Debe indicar la dosis"));
         prescription.setFrequency(require(frequency, "Debe indicar la frecuencia"));
         prescription.setDuration(clean(duration));
-        prescription.setRoute(clean(route));
+        prescription.setRoute(StringUtils.hasText(route) ? clean(route) : medication == null ? null : clean(medication.getRoute()));
         prescription.setPatientInstructions(clean(patientInstructions));
         prescription.setClinicalNotes(clean(clinicalNotes));
         prescription.setPrescriptionStatus(resolvePrescriptionStatus(prescriptionStatus, fallbackPrescriptionStatus));
+    }
+
+
+    private MedicationCatalog resolveMedicationCatalog(UUID medicationCatalogId, UUID organizationId, UUID currentMedicationCatalogId) {
+        if (medicationCatalogId == null) {
+            return null;
+        }
+        var medication = medicationRepository.findById(medicationCatalogId)
+            .filter(item -> !"deleted".equals(item.getStatus()))
+            .orElseThrow(() -> new ClinicalPrescriptionValidationException("Medicamento de catalogo no encontrado"));
+        if (medication.getOrganizationId() != null && !medication.getOrganizationId().equals(organizationId)) {
+            throw new ClinicalPrescriptionValidationException("El medicamento debe ser global o pertenecer a la misma organizacion");
+        }
+        if (!"active".equals(medication.getStatus()) && !medication.getId().equals(currentMedicationCatalogId)) {
+            throw new ClinicalPrescriptionValidationException("No se puede seleccionar un medicamento inactivo para nuevas prescripciones");
+        }
+        return medication;
     }
 
     private ClinicalDiagnosis resolveDiagnosis(UUID diagnosisId, ClinicalRecord record) {
@@ -221,6 +256,10 @@ public class ClinicalPrescriptionService {
             professionalName(prescription.getProfessionalId()),
             prescription.getDiagnosisId(),
             diagnosisText(prescription.getDiagnosisId()),
+            prescription.getMedicationCatalogId(),
+            prescription.getMedicationCode(),
+            prescription.getMedicationCodeSystem(),
+            prescription.getMedicationCodeDisplay(),
             prescription.getMedicationName(),
             prescription.getDosage(),
             prescription.getFrequency(),

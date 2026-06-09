@@ -97,6 +97,7 @@ export function ClinicalPrescriptionPanel({ record }: ClinicalPrescriptionPanelP
         <ClinicalPrescriptionForm
           prescription={editingPrescription}
           diagnoses={availableDiagnoses}
+          organizationId={record.organizationId}
           disabled={isClosed}
           onCancel={() => { setEditingPrescription(null); setIsFormOpen(false); }}
           onSubmit={handleSubmit}
