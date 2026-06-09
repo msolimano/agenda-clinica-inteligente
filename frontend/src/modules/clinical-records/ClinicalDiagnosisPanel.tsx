@@ -88,6 +88,7 @@ export function ClinicalDiagnosisPanel({ record }: ClinicalDiagnosisPanelProps) 
       {isFormOpen || editingDiagnosis ? (
         <ClinicalDiagnosisForm
           diagnosis={editingDiagnosis}
+          organizationId={record.organizationId}
           disabled={isClosed}
           onCancel={() => { setEditingDiagnosis(null); setIsFormOpen(false); }}
           onSubmit={handleSubmit}

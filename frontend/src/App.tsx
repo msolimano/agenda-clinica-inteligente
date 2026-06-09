@@ -8,6 +8,7 @@ import { AgendaControlsPage } from './modules/agenda-controls/AgendaControlsPage
 import { DocumentsPage } from './modules/documents/DocumentsPage';
 import { ClinicalRecordsPage } from './modules/clinical-records/ClinicalRecordsPage';
 import { MedicationCatalogPage } from './modules/medications/MedicationCatalogPage';
+import { DiagnosisCatalogPage } from './modules/diagnosis-catalog/DiagnosisCatalogPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
@@ -17,6 +18,7 @@ const AGENDA_CONTROLS_ROUTE = '#/agenda-controls';
 const DOCUMENTS_ROUTE = '#/documents';
 const CLINICAL_RECORDS_ROUTE = '#/clinical-records';
 const MEDICATIONS_ROUTE = '#/medications';
+const DIAGNOSIS_CATALOG_ROUTE = '#/diagnosis-catalog';
 
 const quickAccessItems = [
   {
@@ -77,6 +79,10 @@ function App() {
 
   if (route === MEDICATIONS_ROUTE) {
     return <MedicationCatalogPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === DIAGNOSIS_CATALOG_ROUTE) {
+    return <DiagnosisCatalogPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {

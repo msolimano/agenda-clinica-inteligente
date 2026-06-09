@@ -6,6 +6,8 @@ import com.iclinical.technology.clinicaldiagnoses.dto.ClinicalDiagnosisStatusReq
 import com.iclinical.technology.clinicaldiagnoses.dto.ClinicalDiagnosisUpdateRequest;
 import com.iclinical.technology.clinicalrecords.ClinicalRecord;
 import com.iclinical.technology.clinicalrecords.ClinicalRecordRepository;
+import com.iclinical.technology.diagnosiscatalog.DiagnosisCatalog;
+import com.iclinical.technology.diagnosiscatalog.DiagnosisCatalogRepository;
 import com.iclinical.technology.patients.PatientRepository;
 import com.iclinical.technology.professionals.ProfessionalRepository;
 import org.springframework.stereotype.Service;
@@ -23,17 +25,20 @@ public class ClinicalDiagnosisService {
 
     private final ClinicalDiagnosisRepository diagnosisRepository;
     private final ClinicalRecordRepository recordRepository;
+    private final DiagnosisCatalogRepository catalogRepository;
     private final PatientRepository patientRepository;
     private final ProfessionalRepository professionalRepository;
 
     public ClinicalDiagnosisService(
         ClinicalDiagnosisRepository diagnosisRepository,
         ClinicalRecordRepository recordRepository,
+        DiagnosisCatalogRepository catalogRepository,
         PatientRepository patientRepository,
         ProfessionalRepository professionalRepository
     ) {
         this.diagnosisRepository = diagnosisRepository;
         this.recordRepository = recordRepository;
+        this.catalogRepository = catalogRepository;
         this.patientRepository = patientRepository;
         this.professionalRepository = professionalRepository;
     }
@@ -69,6 +74,7 @@ public class ClinicalDiagnosisService {
     @Transactional
     public ClinicalDiagnosisResponse create(UUID recordId, ClinicalDiagnosisCreateRequest request) {
         var record = findEditableRecord(recordId);
+        var catalogDiagnosis = resolveDiagnosisCatalog(request == null ? null : request.diagnosisCatalogId(), record.getOrganizationId(), null);
         var diagnosis = new ClinicalDiagnosis();
         diagnosis.setOrganizationId(record.getOrganizationId());
         diagnosis.setClinicalRecordId(record.getId());
@@ -76,6 +82,7 @@ public class ClinicalDiagnosisService {
         diagnosis.setProfessionalId(record.getProfessionalId());
         applyFields(
             diagnosis,
+            catalogDiagnosis,
             request == null ? null : request.diagnosisText(),
             request == null ? null : request.primary(),
             request == null ? null : request.diagnosisStatus(),
@@ -91,9 +98,15 @@ public class ClinicalDiagnosisService {
     @Transactional
     public ClinicalDiagnosisResponse update(UUID id, ClinicalDiagnosisUpdateRequest request) {
         var diagnosis = findDiagnosis(id);
-        findEditableRecord(diagnosis.getClinicalRecordId());
+        var record = findEditableRecord(diagnosis.getClinicalRecordId());
+        var catalogDiagnosis = resolveDiagnosisCatalog(
+            request == null ? null : request.diagnosisCatalogId(),
+            record.getOrganizationId(),
+            diagnosis.getDiagnosisCatalogId()
+        );
         applyFields(
             diagnosis,
+            catalogDiagnosis,
             request == null ? null : request.diagnosisText(),
             request == null ? null : request.primary(),
             request == null ? null : request.diagnosisStatus(),
@@ -116,16 +129,41 @@ public class ClinicalDiagnosisService {
 
     private void applyFields(
         ClinicalDiagnosis diagnosis,
+        DiagnosisCatalog catalogDiagnosis,
         String diagnosisText,
         Boolean primary,
         String diagnosisStatus,
         String observations,
         String fallbackDiagnosisStatus
     ) {
-        diagnosis.setDiagnosisText(requireDiagnosisText(diagnosisText));
+        var resolvedDiagnosisText = clean(diagnosisText);
+        if (!StringUtils.hasText(resolvedDiagnosisText) && catalogDiagnosis != null) {
+            resolvedDiagnosisText = catalogDiagnosis.getDiagnosisDisplay();
+        }
+        diagnosis.setDiagnosisCatalogId(catalogDiagnosis == null ? null : catalogDiagnosis.getId());
+        diagnosis.setCodeSystem(catalogDiagnosis == null ? null : catalogDiagnosis.getCodeSystem());
+        diagnosis.setDiagnosisCode(catalogDiagnosis == null ? null : catalogDiagnosis.getDiagnosisCode());
+        diagnosis.setDiagnosisCodeDisplay(catalogDiagnosis == null ? null : catalogDiagnosis.getDiagnosisDisplay());
+        diagnosis.setDiagnosisText(requireDiagnosisText(resolvedDiagnosisText));
         diagnosis.setPrimary(Boolean.TRUE.equals(primary));
         diagnosis.setDiagnosisStatus(resolveDiagnosisStatus(diagnosisStatus, fallbackDiagnosisStatus));
         diagnosis.setObservations(clean(observations));
+    }
+
+    private DiagnosisCatalog resolveDiagnosisCatalog(UUID diagnosisCatalogId, UUID organizationId, UUID currentDiagnosisCatalogId) {
+        if (diagnosisCatalogId == null) {
+            return null;
+        }
+        var catalogDiagnosis = catalogRepository.findById(diagnosisCatalogId)
+            .filter(item -> !"deleted".equals(item.getStatus()))
+            .orElseThrow(() -> new ClinicalDiagnosisValidationException("Diagnostico de catalogo no encontrado"));
+        if (catalogDiagnosis.getOrganizationId() != null && !catalogDiagnosis.getOrganizationId().equals(organizationId)) {
+            throw new ClinicalDiagnosisValidationException("El diagnostico de catalogo debe ser global o pertenecer a la misma organizacion");
+        }
+        if (!"active".equals(catalogDiagnosis.getStatus()) && !catalogDiagnosis.getId().equals(currentDiagnosisCatalogId)) {
+            throw new ClinicalDiagnosisValidationException("No se puede seleccionar un diagnostico inactivo para nuevos diagnosticos clinicos");
+        }
+        return catalogDiagnosis;
     }
 
     private ClinicalRecord findEditableRecord(UUID recordId) {
@@ -182,6 +220,7 @@ public class ClinicalDiagnosisService {
             patientName(diagnosis.getPatientId()),
             diagnosis.getProfessionalId(),
             professionalName(diagnosis.getProfessionalId()),
+            diagnosis.getDiagnosisCatalogId(),
             diagnosis.getDiagnosisText(),
             diagnosis.isPrimary(),
             diagnosis.getDiagnosisStatus(),

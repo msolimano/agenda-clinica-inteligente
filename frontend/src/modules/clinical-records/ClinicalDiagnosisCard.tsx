@@ -16,6 +16,7 @@ export function ClinicalDiagnosisCard({ diagnosis, disabled, onEdit, onStatusCha
         <div className="clinical-diagnosis-card__title-wrap">
           {diagnosis.primary ? <span className="clinical-diagnosis-card__primary">Principal</span> : <span className="clinical-diagnosis-card__secondary">Secundario</span>}
           <ClinicalDiagnosisStatusBadge status={diagnosis.diagnosisStatus} />
+          {diagnosis.diagnosisCatalogId ? <span className="clinical-diagnosis-card__catalog">Catalogo</span> : null}
         </div>
         <button className="clinical-diagnosis-card__edit" type="button" disabled={disabled} onClick={() => onEdit(diagnosis)}>
           <Pencil aria-hidden="true" size={16} />
@@ -24,6 +25,7 @@ export function ClinicalDiagnosisCard({ diagnosis, disabled, onEdit, onStatusCha
       </div>
 
       <p className="clinical-diagnosis-card__text">{diagnosis.diagnosisText}</p>
+      {diagnosis.diagnosisCode ? <p className="clinical-diagnosis-card__code">{diagnosis.codeSystem ? `${diagnosis.codeSystem}: ` : ''}{diagnosis.diagnosisCode}</p> : null}
       {diagnosis.observations ? <p className="clinical-diagnosis-card__observations">{diagnosis.observations}</p> : null}
 
       <label className="clinical-diagnosis-card__status-control">

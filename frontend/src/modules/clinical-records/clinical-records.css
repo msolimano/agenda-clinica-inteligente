@@ -572,6 +572,7 @@
 
 .clinical-diagnosis-card__primary,
 .clinical-diagnosis-card__secondary,
+.clinical-diagnosis-card__catalog,
 .clinical-diagnosis-status {
   display: inline-flex;
   align-items: center;
@@ -593,6 +594,11 @@
   background: #f1f4f8;
 }
 
+.clinical-diagnosis-card__catalog {
+  color: var(--clinical-records-green);
+  background: #eaf7f0;
+}
+
 .clinical-diagnosis-card__edit {
   min-height: 34px;
   gap: 7px;
@@ -608,6 +614,13 @@
   font-weight: 800;
   line-height: 1.45;
   white-space: pre-wrap;
+}
+
+.clinical-diagnosis-card__code {
+  margin: -4px 0 0;
+  color: var(--clinical-records-blue);
+  font-size: 0.84rem;
+  font-weight: 800;
 }
 
 .clinical-diagnosis-card__observations {

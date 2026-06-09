@@ -55,6 +55,7 @@ export async function listPatientDiagnoses(patientId: string) {
 function normalizePayload(payload: ClinicalDiagnosisPayload) {
   return {
     ...payload,
+    diagnosisCatalogId: payload.diagnosisCatalogId || null,
     diagnosisText: payload.diagnosisText.trim(),
     observations: payload.observations?.trim() || null
   };

@@ -32,6 +32,9 @@ public class ClinicalDiagnosis {
     @Column(name = "professional_id", nullable = false)
     private UUID professionalId;
 
+    @Column(name = "diagnosis_catalog_id")
+    private UUID diagnosisCatalogId;
+
     @Column(name = "diagnosis_text", nullable = false, columnDefinition = "text")
     private String diagnosisText;
 
@@ -83,6 +86,8 @@ public class ClinicalDiagnosis {
     public void setPatientId(UUID patientId) { this.patientId = patientId; }
     public UUID getProfessionalId() { return professionalId; }
     public void setProfessionalId(UUID professionalId) { this.professionalId = professionalId; }
+    public UUID getDiagnosisCatalogId() { return diagnosisCatalogId; }
+    public void setDiagnosisCatalogId(UUID diagnosisCatalogId) { this.diagnosisCatalogId = diagnosisCatalogId; }
     public String getDiagnosisText() { return diagnosisText; }
     public void setDiagnosisText(String diagnosisText) { this.diagnosisText = diagnosisText; }
     public boolean isPrimary() { return primaryDiagnosis; }

@@ -8,6 +8,7 @@ export interface ClinicalDiagnosis {
   patientName: string;
   professionalId: string;
   professionalName: string;
+  diagnosisCatalogId: string | null;
   diagnosisText: string;
   primary: boolean;
   diagnosisStatus: ClinicalDiagnosisStatus;
@@ -21,6 +22,7 @@ export interface ClinicalDiagnosis {
 }
 
 export interface ClinicalDiagnosisPayload {
+  diagnosisCatalogId?: string | null;
   diagnosisText: string;
   primary: boolean;
   diagnosisStatus: ClinicalDiagnosisStatus;

@@ -1,16 +1,21 @@
 import { Save, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
+import { DiagnosisSearchInput } from '../diagnosis-catalog/DiagnosisSearchInput';
+import type { DiagnosisCatalog } from '../diagnosis-catalog/diagnosisCatalog.types';
 import type { ClinicalDiagnosis, ClinicalDiagnosisPayload, ClinicalDiagnosisStatus } from './clinicalDiagnoses.types';
 
 interface ClinicalDiagnosisFormProps {
   diagnosis: ClinicalDiagnosis | null;
+  organizationId?: string | null;
   disabled: boolean;
   onCancel: () => void;
   onSubmit: (payload: ClinicalDiagnosisPayload, diagnosisId?: string) => Promise<void>;
 }
 
-export function ClinicalDiagnosisForm({ diagnosis, disabled, onCancel, onSubmit }: ClinicalDiagnosisFormProps) {
+export function ClinicalDiagnosisForm({ diagnosis, organizationId, disabled, onCancel, onSubmit }: ClinicalDiagnosisFormProps) {
+  const [diagnosisCatalogId, setDiagnosisCatalogId] = useState('');
+  const [selectedDiagnosisLabel, setSelectedDiagnosisLabel] = useState<string | null>(null);
   const [diagnosisText, setDiagnosisText] = useState('');
   const [primary, setPrimary] = useState(false);
   const [diagnosisStatus, setDiagnosisStatus] = useState<ClinicalDiagnosisStatus>('suspected');
@@ -18,6 +23,8 @@ export function ClinicalDiagnosisForm({ diagnosis, disabled, onCancel, onSubmit 
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    setDiagnosisCatalogId(diagnosis?.diagnosisCatalogId ?? '');
+    setSelectedDiagnosisLabel(diagnosis?.diagnosisCatalogId ? diagnosis.diagnosisCodeDisplay || diagnosis.diagnosisText : null);
     setDiagnosisText(diagnosis?.diagnosisText ?? '');
     setPrimary(diagnosis?.primary ?? false);
     setDiagnosisStatus(diagnosis?.diagnosisStatus ?? 'suspected');
@@ -32,8 +39,10 @@ export function ClinicalDiagnosisForm({ diagnosis, disabled, onCancel, onSubmit 
 
     setIsSaving(true);
     try {
-      await onSubmit({ diagnosisText, primary, diagnosisStatus, observations }, diagnosis?.id);
+      await onSubmit({ diagnosisCatalogId: diagnosisCatalogId || null, diagnosisText, primary, diagnosisStatus, observations }, diagnosis?.id);
       if (!diagnosis) {
+        setDiagnosisCatalogId('');
+        setSelectedDiagnosisLabel(null);
         setDiagnosisText('');
         setPrimary(false);
         setDiagnosisStatus('suspected');
@@ -42,6 +51,18 @@ export function ClinicalDiagnosisForm({ diagnosis, disabled, onCancel, onSubmit 
     } finally {
       setIsSaving(false);
     }
+  }
+
+
+  function handleDiagnosisSelect(catalogDiagnosis: DiagnosisCatalog) {
+    setDiagnosisCatalogId(catalogDiagnosis.id);
+    setSelectedDiagnosisLabel(catalogDiagnosis.diagnosisDisplay);
+    setDiagnosisText(catalogDiagnosis.diagnosisDisplay);
+  }
+
+  function handleDiagnosisClear() {
+    setDiagnosisCatalogId('');
+    setSelectedDiagnosisLabel(null);
   }
 
   return (
@@ -53,9 +74,17 @@ export function ClinicalDiagnosisForm({ diagnosis, disabled, onCancel, onSubmit 
         </button>
       </div>
 
+      <DiagnosisSearchInput
+        organizationId={organizationId}
+        disabled={disabled}
+        selectedLabel={selectedDiagnosisLabel}
+        onSelect={handleDiagnosisSelect}
+        onClear={handleDiagnosisClear}
+      />
+
       <label className="clinical-diagnosis-field clinical-diagnosis-field--wide">
         Diagnostico clinico
-        <textarea value={diagnosisText} onChange={(event) => setDiagnosisText(event.target.value)} disabled={disabled} rows={3} required />
+        <textarea value={diagnosisText} onChange={(event) => { setDiagnosisText(event.target.value); if (diagnosisCatalogId) { setDiagnosisCatalogId(''); setSelectedDiagnosisLabel(null); } }} disabled={disabled} rows={3} required />
       </label>
 
       <label className="clinical-diagnosis-field">

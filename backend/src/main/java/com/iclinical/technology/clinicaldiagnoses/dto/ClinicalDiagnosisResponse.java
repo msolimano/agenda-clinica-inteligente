@@ -11,6 +11,7 @@ public record ClinicalDiagnosisResponse(
     String patientName,
     UUID professionalId,
     String professionalName,
+    UUID diagnosisCatalogId,
     String diagnosisText,
     boolean primary,
     String diagnosisStatus,
