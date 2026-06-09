@@ -1,4 +1,5 @@
 import { FileText, LockKeyhole, Pencil } from 'lucide-react';
+import { ClinicalDiagnosisPanel } from './ClinicalDiagnosisPanel';
 import { ClinicalRecordStatusBadge } from './ClinicalRecordStatusBadge';
 import { formatDateTime } from './clinicalRecordsDate';
 import type { ClinicalRecord } from './clinicalRecords.types';
@@ -60,6 +61,8 @@ export function ClinicalRecordDetail({ record, onEdit, onCloseRecord }: Clinical
         <DetailBlock title="Plan" value={record.plan} />
         <DetailBlock title="Notas" value={record.notes} />
       </div>
+
+      <ClinicalDiagnosisPanel record={record} />
     </section>
   );
 }

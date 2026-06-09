@@ -383,3 +383,263 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.clinical-diagnosis-panel {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.clinical-diagnosis-panel__header,
+.clinical-diagnosis-panel__heading,
+.clinical-diagnosis-card__header,
+.clinical-diagnosis-card__title-wrap,
+.clinical-diagnosis-form__header {
+  display: flex;
+  align-items: center;
+}
+
+.clinical-diagnosis-panel__header {
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--clinical-records-line);
+}
+
+.clinical-diagnosis-panel__heading {
+  gap: 10px;
+  min-width: 0;
+}
+
+.clinical-diagnosis-panel__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-records-blue), var(--clinical-records-teal));
+}
+
+.clinical-diagnosis-panel__title,
+.clinical-diagnosis-form__header h3 {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.clinical-diagnosis-panel__subtitle,
+.clinical-diagnosis-panel__note,
+.clinical-diagnosis-panel__loading,
+.clinical-diagnosis-list__empty,
+.clinical-diagnosis-card__observations {
+  margin: 0;
+  color: var(--clinical-records-muted);
+  font-size: 0.88rem;
+}
+
+.clinical-diagnosis-panel__new,
+.clinical-diagnosis-form__submit,
+.clinical-diagnosis-form__close,
+.clinical-diagnosis-card__edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.clinical-diagnosis-panel__new,
+.clinical-diagnosis-form__submit {
+  min-height: 38px;
+  gap: 7px;
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--clinical-records-blue), var(--clinical-records-teal));
+}
+
+.clinical-diagnosis-panel__new {
+  padding: 0 12px;
+}
+
+.clinical-diagnosis-form__submit {
+  padding: 0 14px;
+}
+
+.clinical-diagnosis-panel__new:disabled,
+.clinical-diagnosis-form__submit:disabled,
+.clinical-diagnosis-card__edit:disabled,
+.clinical-diagnosis-card__status-control select:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.clinical-diagnosis-panel__error {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #7b3f00;
+  background: #fff4e8;
+  font-weight: 700;
+}
+
+.clinical-diagnosis-form {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.clinical-diagnosis-form__header {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.clinical-diagnosis-form__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--clinical-records-line);
+  color: var(--clinical-records-blue);
+  background: #ffffff;
+}
+
+.clinical-diagnosis-field {
+  display: grid;
+  gap: 7px;
+  color: var(--clinical-records-blue);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.clinical-diagnosis-field textarea,
+.clinical-diagnosis-field select,
+.clinical-diagnosis-card__status-control select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  color: var(--clinical-records-navy);
+  background: #ffffff;
+}
+
+.clinical-diagnosis-field textarea {
+  resize: vertical;
+  padding: 10px;
+}
+
+.clinical-diagnosis-field select,
+.clinical-diagnosis-card__status-control select {
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.clinical-diagnosis-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--clinical-records-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.clinical-diagnosis-list {
+  display: grid;
+  gap: 10px;
+}
+
+.clinical-diagnosis-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--clinical-records-line);
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.clinical-diagnosis-card__header {
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.clinical-diagnosis-card__title-wrap {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.clinical-diagnosis-card__primary,
+.clinical-diagnosis-card__secondary,
+.clinical-diagnosis-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.clinical-diagnosis-card__primary {
+  color: var(--clinical-records-blue);
+  background: #eef7fb;
+}
+
+.clinical-diagnosis-card__secondary {
+  color: var(--clinical-records-muted);
+  background: #f1f4f8;
+}
+
+.clinical-diagnosis-card__edit {
+  min-height: 34px;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--clinical-records-line);
+  color: var(--clinical-records-blue);
+  background: #ffffff;
+}
+
+.clinical-diagnosis-card__text {
+  margin: 0;
+  color: var(--clinical-records-ink);
+  font-weight: 800;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.clinical-diagnosis-card__observations {
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.clinical-diagnosis-card__status-control {
+  display: grid;
+  gap: 7px;
+  max-width: 260px;
+  color: var(--clinical-records-blue);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.clinical-diagnosis-status--suspected {
+  color: #7b3f00;
+  background: #fff4e8;
+}
+
+.clinical-diagnosis-status--confirmed {
+  color: var(--clinical-records-blue);
+  background: #eef7fb;
+}
+
+.clinical-diagnosis-status--resolved {
+  color: var(--clinical-records-green);
+  background: #eaf7f0;
+}
+
+.clinical-diagnosis-status--ruled_out {
+  color: var(--clinical-records-red);
+  background: #fdeceb;
+}
