@@ -10,6 +10,7 @@ import { ClinicalRecordsPage } from './modules/clinical-records/ClinicalRecordsP
 import { MedicationCatalogPage } from './modules/medications/MedicationCatalogPage';
 import { DiagnosisCatalogPage } from './modules/diagnosis-catalog/DiagnosisCatalogPage';
 import { BIDashboardPage } from './modules/bi-dashboard/BIDashboardPage';
+import { PatientPortalPage } from './modules/patient-portal/PatientPortalPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
@@ -21,6 +22,7 @@ const CLINICAL_RECORDS_ROUTE = '#/clinical-records';
 const MEDICATIONS_ROUTE = '#/medications';
 const DIAGNOSIS_CATALOG_ROUTE = '#/diagnosis-catalog';
 const BI_DASHBOARD_ROUTE = '#/bi-dashboard';
+const PATIENT_PORTAL_ROUTE = '#/patient-portal';
 
 const quickAccessItems = [
   {
@@ -39,7 +41,7 @@ const quickAccessItems = [
     label: 'Portal Paciente',
     description: 'Información y documentos clínicos',
     icon: UserRound,
-    targetHash: PATIENTS_ROUTE
+    targetHash: PATIENT_PORTAL_ROUTE
   }
 ];
 
@@ -89,6 +91,10 @@ function App() {
 
   if (route === BI_DASHBOARD_ROUTE) {
     return <BIDashboardPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === PATIENT_PORTAL_ROUTE) {
+    return <PatientPortalPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {
