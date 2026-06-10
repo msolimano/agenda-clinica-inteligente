@@ -9,6 +9,7 @@ import { DocumentsPage } from './modules/documents/DocumentsPage';
 import { ClinicalRecordsPage } from './modules/clinical-records/ClinicalRecordsPage';
 import { MedicationCatalogPage } from './modules/medications/MedicationCatalogPage';
 import { DiagnosisCatalogPage } from './modules/diagnosis-catalog/DiagnosisCatalogPage';
+import { BIDashboardPage } from './modules/bi-dashboard/BIDashboardPage';
 
 const PROFESSIONALS_ROUTE = '#/professionals';
 const PATIENTS_ROUTE = '#/patients';
@@ -19,6 +20,7 @@ const DOCUMENTS_ROUTE = '#/documents';
 const CLINICAL_RECORDS_ROUTE = '#/clinical-records';
 const MEDICATIONS_ROUTE = '#/medications';
 const DIAGNOSIS_CATALOG_ROUTE = '#/diagnosis-catalog';
+const BI_DASHBOARD_ROUTE = '#/bi-dashboard';
 
 const quickAccessItems = [
   {
@@ -83,6 +85,10 @@ function App() {
 
   if (route === DIAGNOSIS_CATALOG_ROUTE) {
     return <DiagnosisCatalogPage onBackToLogin={() => { window.location.hash = ''; }} />;
+  }
+
+  if (route === BI_DASHBOARD_ROUTE) {
+    return <BIDashboardPage onBackToLogin={() => { window.location.hash = ''; }} />;
   }
 
   if (route === PATIENTS_ROUTE) {
