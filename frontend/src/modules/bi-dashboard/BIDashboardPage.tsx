@@ -4,14 +4,19 @@ import { listProfessionals, listSpecialties } from '../professionals/professiona
 import type { Professional, Specialty } from '../professionals/professionals.types';
 import { AgendaKpiPanel } from './AgendaKpiPanel';
 import { AIKpiPanel } from './AIKpiPanel';
+import { AIStatusChartPanel } from './AIStatusChartPanel';
+import { AppointmentTrendPanel } from './AppointmentTrendPanel';
 import { BIDashboardFilters } from './BIDashboardFilters';
 import { ClinicalKpiPanel } from './ClinicalKpiPanel';
 import { DocumentsKpiPanel } from './DocumentsKpiPanel';
 import { FHIRKpiPanel } from './FHIRKpiPanel';
+import { SpecialtyOccupancyPanel } from './SpecialtyOccupancyPanel';
 import { SummaryKpiCards } from './SummaryKpiCards';
+import { TopDiagnosesChartPanel } from './TopDiagnosesChartPanel';
+import { TopMedicationsChartPanel } from './TopMedicationsChartPanel';
 import { defaultFromDate, defaultToDate, endOfDate, shortDate, startOfDate } from './biDashboardDate';
-import { getBISummary } from './biDashboardApi';
-import type { BISummary } from './biDashboard.types';
+import { getBIAITrends, getBIAppointmentTrend, getBISpecialtyOccupancy, getBISummary, getBITopDiagnoses, getBITopMedications } from './biDashboardApi';
+import type { BIAITrend, BIAppointmentTrend, BIBarItem, BIDashboardFilters as BIDashboardFilterValues, BISpecialtyOccupancy, BISummary } from './biDashboard.types';
 import './bi-dashboard.css';
 
 interface BIDashboardPageProps {
@@ -20,6 +25,11 @@ interface BIDashboardPageProps {
 
 export function BIDashboardPage({ onBackToLogin }: BIDashboardPageProps) {
   const [summary, setSummary] = useState<BISummary | null>(null);
+  const [appointmentTrend, setAppointmentTrend] = useState<BIAppointmentTrend | null>(null);
+  const [specialtyOccupancy, setSpecialtyOccupancy] = useState<BISpecialtyOccupancy[]>([]);
+  const [topDiagnoses, setTopDiagnoses] = useState<BIBarItem[]>([]);
+  const [topMedications, setTopMedications] = useState<BIBarItem[]>([]);
+  const [aiTrend, setAiTrend] = useState<BIAITrend | null>(null);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [fromDate, setFromDate] = useState(defaultFromDate());
@@ -42,17 +52,30 @@ export function BIDashboardPage({ onBackToLogin }: BIDashboardPageProps) {
     }
   }
 
-  async function loadSummary() {
+  async function loadDashboard() {
     setIsLoading(true);
     setError(null);
+    const filters: BIDashboardFilterValues = {
+      from: startOfDate(fromDate),
+      to: endOfDate(toDate),
+      professionalId,
+      specialtyId
+    };
     try {
-      const response = await getBISummary({
-        from: startOfDate(fromDate),
-        to: endOfDate(toDate),
-        professionalId,
-        specialtyId
-      });
-      setSummary(response);
+      const [summaryResponse, appointmentTrendResponse, specialtyOccupancyResponse, topDiagnosesResponse, topMedicationsResponse, aiTrendResponse] = await Promise.all([
+        getBISummary(filters),
+        getBIAppointmentTrend(filters),
+        getBISpecialtyOccupancy(filters),
+        getBITopDiagnoses(filters),
+        getBITopMedications(filters),
+        getBIAITrends({ from: filters.from, to: filters.to })
+      ]);
+      setSummary(summaryResponse);
+      setAppointmentTrend(appointmentTrendResponse);
+      setSpecialtyOccupancy(specialtyOccupancyResponse);
+      setTopDiagnoses(topDiagnosesResponse);
+      setTopMedications(topMedicationsResponse);
+      setAiTrend(aiTrendResponse);
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible cargar indicadores BI');
     } finally {
@@ -65,7 +88,7 @@ export function BIDashboardPage({ onBackToLogin }: BIDashboardPageProps) {
   }, []);
 
   useEffect(() => {
-    void loadSummary();
+    void loadDashboard();
   }, []);
 
   return (
@@ -99,7 +122,7 @@ export function BIDashboardPage({ onBackToLogin }: BIDashboardPageProps) {
         onToDateChange={setToDate}
         onProfessionalChange={setProfessionalId}
         onSpecialtyChange={setSpecialtyId}
-        onRefresh={() => void loadSummary()}
+        onRefresh={() => void loadDashboard()}
       />
 
       {error ? <div className="bi-dashboard-page__alert" role="alert">{error}</div> : null}
@@ -108,6 +131,13 @@ export function BIDashboardPage({ onBackToLogin }: BIDashboardPageProps) {
       {summary ? (
         <>
           <SummaryKpiCards summary={summary} />
+          <section className="bi-dashboard-page__visuals" aria-label="Visualizaciones BI">
+            <AppointmentTrendPanel trend={appointmentTrend} />
+            <SpecialtyOccupancyPanel items={specialtyOccupancy} />
+            <TopDiagnosesChartPanel items={topDiagnoses} />
+            <TopMedicationsChartPanel items={topMedications} />
+            <AIStatusChartPanel trend={aiTrend} />
+          </section>
           <section className="bi-dashboard-page__content">
             <AgendaKpiPanel agenda={summary.agenda} waitingList={summary.waitingList} patients={summary.patients} />
             <ClinicalKpiPanel clinical={summary.clinical} />

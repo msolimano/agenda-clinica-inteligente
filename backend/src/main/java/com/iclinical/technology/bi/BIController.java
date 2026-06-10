@@ -1,10 +1,14 @@
 package com.iclinical.technology.bi;
 
 import com.iclinical.technology.bi.dto.BIAIKpiResponse;
+import com.iclinical.technology.bi.dto.BIAITrendResponse;
 import com.iclinical.technology.bi.dto.BIAgendaResponse;
+import com.iclinical.technology.bi.dto.BIAppointmentTrendResponse;
+import com.iclinical.technology.bi.dto.BIBarItemResponse;
 import com.iclinical.technology.bi.dto.BIClinicalKpiResponse;
 import com.iclinical.technology.bi.dto.BIDocumentKpiResponse;
 import com.iclinical.technology.bi.dto.BIFHIRKpiResponse;
+import com.iclinical.technology.bi.dto.BISpecialtyOccupancyResponse;
 import com.iclinical.technology.bi.dto.BISummaryResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -76,6 +81,54 @@ public class BIController {
         @RequestParam(required = false) Instant to
     ) {
         return biService.fhir(filter(from, to, null, null));
+    }
+
+    @GetMapping("/trends/appointments")
+    public BIAppointmentTrendResponse appointmentTrend(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.appointmentTrend(filter(from, to, professionalId, specialtyId));
+    }
+
+    @GetMapping("/specialties/occupancy")
+    public List<BISpecialtyOccupancyResponse> specialtyOccupancy(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.specialtyOccupancy(filter(from, to, professionalId, specialtyId));
+    }
+
+    @GetMapping("/clinical/top-diagnoses")
+    public List<BIBarItemResponse> topDiagnoses(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.topDiagnoses(filter(from, to, professionalId, specialtyId));
+    }
+
+    @GetMapping("/clinical/top-medications")
+    public List<BIBarItemResponse> topMedications(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.topMedications(filter(from, to, professionalId, specialtyId));
+    }
+
+    @GetMapping("/ai/trends")
+    public BIAITrendResponse aiTrends(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to
+    ) {
+        return biService.aiTrends(filter(from, to, null, null));
     }
 
     private BIFilter filter(Instant from, Instant to, UUID professionalId, UUID specialtyId) {

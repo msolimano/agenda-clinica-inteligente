@@ -1,4 +1,16 @@
-import type { BIAIKpi, BIAgendaOverview, BIClinicalKpi, BIDashboardFilters, BIDocumentKpi, BIFHIRKpi, BISummary } from './biDashboard.types';
+import type {
+  BIAIKpi,
+  BIAITrend,
+  BIAgendaOverview,
+  BIAppointmentTrend,
+  BIBarItem,
+  BIClinicalKpi,
+  BIDashboardFilters,
+  BIDocumentKpi,
+  BIFHIRKpi,
+  BISpecialtyOccupancy,
+  BISummary
+} from './biDashboard.types';
 
 const API_BASE = '/api';
 
@@ -35,6 +47,26 @@ export async function getBIAI(filters: Pick<BIDashboardFilters, 'from' | 'to'>) 
 
 export async function getBIFHIR(filters: Pick<BIDashboardFilters, 'from' | 'to'>) {
   return request<BIFHIRKpi>(`/bi/fhir${queryString(filters)}`);
+}
+
+export async function getBIAppointmentTrend(filters: BIDashboardFilters) {
+  return request<BIAppointmentTrend>(`/bi/trends/appointments${queryString(filters)}`);
+}
+
+export async function getBISpecialtyOccupancy(filters: BIDashboardFilters) {
+  return request<BISpecialtyOccupancy[]>(`/bi/specialties/occupancy${queryString(filters)}`);
+}
+
+export async function getBITopDiagnoses(filters: BIDashboardFilters) {
+  return request<BIBarItem[]>(`/bi/clinical/top-diagnoses${queryString(filters)}`);
+}
+
+export async function getBITopMedications(filters: BIDashboardFilters) {
+  return request<BIBarItem[]>(`/bi/clinical/top-medications${queryString(filters)}`);
+}
+
+export async function getBIAITrends(filters: Pick<BIDashboardFilters, 'from' | 'to'>) {
+  return request<BIAITrend>(`/bi/ai/trends${queryString(filters)}`);
 }
 
 function queryString(filters: BIDashboardFilters) {

@@ -1,12 +1,16 @@
 package com.iclinical.technology.bi;
 
 import com.iclinical.technology.bi.dto.BIAIKpiResponse;
+import com.iclinical.technology.bi.dto.BIAITrendResponse;
 import com.iclinical.technology.bi.dto.BIAgendaKpiResponse;
 import com.iclinical.technology.bi.dto.BIAgendaResponse;
+import com.iclinical.technology.bi.dto.BIAppointmentTrendResponse;
+import com.iclinical.technology.bi.dto.BIBarItemResponse;
 import com.iclinical.technology.bi.dto.BIClinicalKpiResponse;
 import com.iclinical.technology.bi.dto.BIDocumentKpiResponse;
 import com.iclinical.technology.bi.dto.BIFHIRKpiResponse;
 import com.iclinical.technology.bi.dto.BIPatientKpiResponse;
+import com.iclinical.technology.bi.dto.BISpecialtyOccupancyResponse;
 import com.iclinical.technology.bi.dto.BISummaryResponse;
 import com.iclinical.technology.bi.dto.BIWaitingListKpiResponse;
 import com.iclinical.technology.bi.repository.BIAIRepository;
@@ -18,6 +22,8 @@ import com.iclinical.technology.bi.repository.BIPatientRepository;
 import com.iclinical.technology.bi.repository.BIWaitingListRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class BIService {
@@ -103,5 +109,30 @@ public class BIService {
     @Transactional(readOnly = true)
     public BIFHIRKpiResponse fhir(BIFilter filter) {
         return fhirRepository.load(filter);
+    }
+
+    @Transactional(readOnly = true)
+    public BIAppointmentTrendResponse appointmentTrend(BIFilter filter) {
+        return agendaRepository.appointmentTrend(filter);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BISpecialtyOccupancyResponse> specialtyOccupancy(BIFilter filter) {
+        return agendaRepository.specialtyOccupancy(filter);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BIBarItemResponse> topDiagnoses(BIFilter filter) {
+        return clinicalRepository.topDiagnoses(filter);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BIBarItemResponse> topMedications(BIFilter filter) {
+        return clinicalRepository.topMedications(filter);
+    }
+
+    @Transactional(readOnly = true)
+    public BIAITrendResponse aiTrends(BIFilter filter) {
+        return aiRepository.trends(filter);
     }
 }

@@ -53,7 +53,7 @@ public class BIClinicalRepository extends BIRepositorySupport {
         );
     }
 
-    private List<BIBarItemResponse> topDiagnoses(BIFilter filter) {
+    public List<BIBarItemResponse> topDiagnoses(BIFilter filter) {
         var sql = """
             select coalesce(nullif(cd.diagnosis_code_display, ''), nullif(cd.diagnosis_text, ''), 'Sin diagnostico') as label,
                    count(*) as value
@@ -69,7 +69,7 @@ public class BIClinicalRepository extends BIRepositorySupport {
         return jdbcTemplate.query(sql, params(filter), (rs, rowNum) -> new BIBarItemResponse(rs.getString("label"), longValue(rs, "value")));
     }
 
-    private List<BIBarItemResponse> topMedications(BIFilter filter) {
+    public List<BIBarItemResponse> topMedications(BIFilter filter) {
         var sql = """
             select coalesce(nullif(cp.medication_code_display, ''), nullif(cp.medication_name, ''), 'Sin medicamento') as label,
                    count(*) as value

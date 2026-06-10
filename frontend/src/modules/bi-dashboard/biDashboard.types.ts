@@ -56,6 +56,36 @@ export interface BIFHIRKpi {
   fhirResourcesAvailable: number;
 }
 
+export interface BITrendPoint {
+  date: string;
+  scheduled: number;
+  confirmed: number;
+  cancelled: number;
+  noShow: number;
+}
+
+export interface BIAppointmentTrend {
+  from: string;
+  to: string;
+  points: BITrendPoint[];
+}
+
+export interface BISpecialtyOccupancy {
+  specialtyId: string;
+  specialtyName: string;
+  occupiedAppointments: number;
+  operativeAppointments: number;
+  occupancyRate: number;
+  occupancyRateApproximate: boolean;
+}
+
+export interface BIAITrend {
+  completed: number;
+  failed: number;
+  pending: number;
+  processing: number;
+}
+
 export interface BISummary {
   from: string;
   to: string;
