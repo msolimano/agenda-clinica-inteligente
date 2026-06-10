@@ -31,6 +31,22 @@ public interface ClinicalRecordRepository extends JpaRepository<ClinicalRecord, 
 
     List<ClinicalRecord> findByPatientIdAndStatusNotOrderByRecordDateDescCreatedAtDesc(UUID patientId, String status);
 
+
+    @Query("""
+        select r
+        from ClinicalRecord r
+        where r.patientId = :patientId
+          and r.status <> 'deleted'
+          and (:from is null or r.recordDate >= :from)
+          and (:to is null or r.recordDate <= :to)
+        order by r.recordDate asc, r.createdAt asc
+        """)
+    List<ClinicalRecord> findFHIRBundleRecords(
+        @Param("patientId") UUID patientId,
+        @Param("from") Instant from,
+        @Param("to") Instant to
+    );
+
     @Query("""
         select count(r) > 0
         from ClinicalRecord r

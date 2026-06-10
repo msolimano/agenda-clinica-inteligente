@@ -4,6 +4,8 @@ import com.iclinical.technology.clinicaldiagnoses.ClinicalDiagnosisRepository;
 import com.iclinical.technology.clinicalprescriptions.ClinicalPrescriptionRepository;
 import com.iclinical.technology.clinicalrecords.ClinicalRecordRepository;
 import com.iclinical.technology.documents.ClinicalDocumentRepository;
+import com.iclinical.technology.fhir.bundle.FHIRBundleRequest;
+import com.iclinical.technology.fhir.bundle.FHIRBundleService;
 import com.iclinical.technology.fhir.condition.ConditionFHIRMapper;
 import com.iclinical.technology.fhir.document.DocumentReferenceFHIRMapper;
 import com.iclinical.technology.fhir.encounter.EncounterFHIRMapper;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
@@ -42,6 +45,7 @@ public class FHIRController {
     private final ConditionFHIRMapper conditionFHIRMapper;
     private final MedicationRequestFHIRMapper medicationRequestFHIRMapper;
     private final DocumentReferenceFHIRMapper documentReferenceFHIRMapper;
+    private final FHIRBundleService fhirBundleService;
 
     public FHIRController(
         PatientRepository patientRepository,
@@ -55,7 +59,8 @@ public class FHIRController {
         EncounterFHIRMapper encounterFHIRMapper,
         ConditionFHIRMapper conditionFHIRMapper,
         MedicationRequestFHIRMapper medicationRequestFHIRMapper,
-        DocumentReferenceFHIRMapper documentReferenceFHIRMapper
+        DocumentReferenceFHIRMapper documentReferenceFHIRMapper,
+        FHIRBundleService fhirBundleService
     ) {
         this.patientRepository = patientRepository;
         this.professionalRepository = professionalRepository;
@@ -69,6 +74,29 @@ public class FHIRController {
         this.conditionFHIRMapper = conditionFHIRMapper;
         this.medicationRequestFHIRMapper = medicationRequestFHIRMapper;
         this.documentReferenceFHIRMapper = documentReferenceFHIRMapper;
+        this.fhirBundleService = fhirBundleService;
+    }
+
+
+    @GetMapping("/patients/{patientId}/bundle")
+    public ResponseEntity<Map<String, Object>> patientBundle(
+        @PathVariable UUID patientId,
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(defaultValue = "true") boolean includeDocuments,
+        @RequestParam(defaultValue = "true") boolean includePrescriptions,
+        @RequestParam(defaultValue = "true") boolean includeDiagnoses,
+        @RequestParam(defaultValue = "true") boolean includeEncounters
+    ) {
+        return fhirResponse(fhirBundleService.patientBundle(new FHIRBundleRequest(
+            patientId,
+            from,
+            to,
+            includeDocuments,
+            includePrescriptions,
+            includeDiagnoses,
+            includeEncounters
+        )));
     }
 
     @GetMapping("/metadata")
@@ -146,7 +174,8 @@ public class FHIRController {
                 supportedResource("Encounter"),
                 supportedResource("Condition"),
                 supportedResource("MedicationRequest"),
-                supportedResource("DocumentReference")
+                supportedResource("DocumentReference"),
+                supportedResource("Bundle")
             )
         )));
         return statement;

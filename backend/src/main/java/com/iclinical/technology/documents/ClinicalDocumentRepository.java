@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,4 +21,20 @@ public interface ClinicalDocumentRepository extends JpaRepository<ClinicalDocume
     List<ClinicalDocument> findActiveFiltered(@Param("patientId") UUID patientId, @Param("documentType") String documentType);
 
     List<ClinicalDocument> findByPatientIdAndStatusNotOrderByCreatedAtDesc(UUID patientId, String status);
+
+
+    @Query("""
+        select d
+        from ClinicalDocument d
+        where d.patientId = :patientId
+          and d.status <> 'deleted'
+          and (:from is null or d.createdAt >= :from)
+          and (:to is null or d.createdAt <= :to)
+        order by d.createdAt asc
+        """)
+    List<ClinicalDocument> findActiveFHIRBundleByPatient(
+        @Param("patientId") UUID patientId,
+        @Param("from") Instant from,
+        @Param("to") Instant to
+    );
 }
