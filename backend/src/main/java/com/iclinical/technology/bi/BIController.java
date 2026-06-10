@@ -6,9 +6,13 @@ import com.iclinical.technology.bi.dto.BIAgendaResponse;
 import com.iclinical.technology.bi.dto.BIAppointmentTrendResponse;
 import com.iclinical.technology.bi.dto.BIBarItemResponse;
 import com.iclinical.technology.bi.dto.BIClinicalKpiResponse;
+import com.iclinical.technology.bi.dto.BIComparisonResponse;
 import com.iclinical.technology.bi.dto.BIDocumentKpiResponse;
+import com.iclinical.technology.bi.dto.BIEfficiencyResponse;
 import com.iclinical.technology.bi.dto.BIFHIRKpiResponse;
+import com.iclinical.technology.bi.dto.BIProfessionalRankingResponse;
 import com.iclinical.technology.bi.dto.BISpecialtyOccupancyResponse;
+import com.iclinical.technology.bi.dto.BISpecialtyRankingResponse;
 import com.iclinical.technology.bi.dto.BISummaryResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -129,6 +133,43 @@ public class BIController {
         @RequestParam(required = false) Instant to
     ) {
         return biService.aiTrends(filter(from, to, null, null));
+    }
+
+    @GetMapping("/comparison")
+    public BIComparisonResponse comparison(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.comparison(filter(from, to, professionalId, specialtyId));
+    }
+
+    @GetMapping("/rankings/specialties")
+    public List<BISpecialtyRankingResponse> specialtyRankings(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to
+    ) {
+        return biService.specialtyRankings(filter(from, to, null, null));
+    }
+
+    @GetMapping("/rankings/professionals")
+    public List<BIProfessionalRankingResponse> professionalRankings(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.professionalRankings(filter(from, to, null, specialtyId));
+    }
+
+    @GetMapping("/efficiency")
+    public BIEfficiencyResponse efficiency(
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(required = false) UUID professionalId,
+        @RequestParam(required = false) UUID specialtyId
+    ) {
+        return biService.efficiency(filter(from, to, professionalId, specialtyId));
     }
 
     private BIFilter filter(Instant from, Instant to, UUID professionalId, UUID specialtyId) {

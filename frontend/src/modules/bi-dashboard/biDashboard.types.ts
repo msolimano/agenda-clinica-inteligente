@@ -86,6 +86,68 @@ export interface BIAITrend {
   processing: number;
 }
 
+export type BIVariationType = 'increase' | 'decrease' | 'stable' | 'new';
+
+export interface BIComparisonPeriod {
+  from: string;
+  to: string;
+}
+
+export interface BIComparisonMetric {
+  key: string;
+  label: string;
+  currentValue: number;
+  previousValue: number;
+  absoluteDifference: number;
+  percentageVariation: number | null;
+  variationLabel: string;
+  variationType: BIVariationType;
+}
+
+export interface BIComparison {
+  currentPeriod: BIComparisonPeriod;
+  previousPeriod: BIComparisonPeriod;
+  metrics: BIComparisonMetric[];
+}
+
+export interface BISpecialtyRanking {
+  specialtyId: string;
+  specialtyName: string;
+  totalAppointments: number;
+  completedAppointments: number;
+  cancelledAppointments: number;
+  noShowAppointments: number;
+  occupancyRate: number;
+  occupancyRateApproximate: boolean;
+}
+
+export interface BIProfessionalRanking {
+  professionalId: string;
+  professionalName: string;
+  specialtyName: string;
+  totalAppointments: number;
+  cancelledAppointments: number;
+  noShowAppointments: number;
+  overbookings: number;
+  clinicalRecordsTotal: number;
+}
+
+export interface BIEfficiencyMetric {
+  key: string;
+  label: string;
+  numerator: number;
+  denominator: number;
+  rate: number;
+  approximate: boolean;
+  description: string;
+}
+
+export interface BIEfficiency {
+  from: string;
+  to: string;
+  metrics: BIEfficiencyMetric[];
+}
+
 export interface BISummary {
   from: string;
   to: string;

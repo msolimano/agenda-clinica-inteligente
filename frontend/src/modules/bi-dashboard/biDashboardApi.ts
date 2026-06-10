@@ -5,10 +5,14 @@ import type {
   BIAppointmentTrend,
   BIBarItem,
   BIClinicalKpi,
+  BIComparison,
   BIDashboardFilters,
   BIDocumentKpi,
+  BIEfficiency,
   BIFHIRKpi,
+  BIProfessionalRanking,
   BISpecialtyOccupancy,
+  BISpecialtyRanking,
   BISummary
 } from './biDashboard.types';
 
@@ -67,6 +71,22 @@ export async function getBITopMedications(filters: BIDashboardFilters) {
 
 export async function getBIAITrends(filters: Pick<BIDashboardFilters, 'from' | 'to'>) {
   return request<BIAITrend>(`/bi/ai/trends${queryString(filters)}`);
+}
+
+export async function getBIComparison(filters: BIDashboardFilters) {
+  return request<BIComparison>(`/bi/comparison${queryString(filters)}`);
+}
+
+export async function getBISpecialtyRankings(filters: Pick<BIDashboardFilters, 'from' | 'to'>) {
+  return request<BISpecialtyRanking[]>(`/bi/rankings/specialties${queryString(filters)}`);
+}
+
+export async function getBIProfessionalRankings(filters: Pick<BIDashboardFilters, 'from' | 'to' | 'specialtyId'>) {
+  return request<BIProfessionalRanking[]>(`/bi/rankings/professionals${queryString(filters)}`);
+}
+
+export async function getBIEfficiency(filters: BIDashboardFilters) {
+  return request<BIEfficiency>(`/bi/efficiency${queryString(filters)}`);
 }
 
 function queryString(filters: BIDashboardFilters) {
