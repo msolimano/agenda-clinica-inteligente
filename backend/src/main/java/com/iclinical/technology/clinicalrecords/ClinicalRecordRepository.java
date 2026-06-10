@@ -37,8 +37,8 @@ public interface ClinicalRecordRepository extends JpaRepository<ClinicalRecord, 
         from ClinicalRecord r
         where r.patientId = :patientId
           and r.status <> 'deleted'
-          and (:from is null or r.recordDate >= :from)
-          and (:to is null or r.recordDate <= :to)
+          and r.recordDate >= :from
+          and r.recordDate <= :to
         order by r.recordDate asc, r.createdAt asc
         """)
     List<ClinicalRecord> findFHIRBundleRecords(

@@ -30,8 +30,8 @@ public interface ClinicalPrescriptionRepository extends JpaRepository<ClinicalPr
         from ClinicalPrescription p
         where p.patientId = :patientId
           and p.status = 'active'
-          and (:from is null or p.createdAt >= :from)
-          and (:to is null or p.createdAt <= :to)
+          and p.createdAt >= :from
+          and p.createdAt <= :to
         order by p.createdAt asc
         """)
     List<ClinicalPrescription> findActiveFHIRBundleByPatient(

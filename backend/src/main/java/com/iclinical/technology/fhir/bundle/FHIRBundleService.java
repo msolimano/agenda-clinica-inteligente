@@ -17,12 +17,16 @@ import com.iclinical.technology.patients.PatientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class FHIRBundleService {
+
+    private static final Instant DEFAULT_FROM = Instant.parse("1900-01-01T00:00:00Z");
+    private static final Instant DEFAULT_TO = Instant.parse("2999-12-31T23:59:59Z");
 
     private final PatientRepository patientRepository;
     private final ClinicalRecordRepository recordRepository;
@@ -68,11 +72,14 @@ public class FHIRBundleService {
             .filter(item -> !"deleted".equals(item.getStatus()))
             .orElseThrow(() -> new FHIRResourceNotFoundException("Patient no encontrado"));
 
+        var from = request.from() == null ? DEFAULT_FROM : request.from();
+        var to = request.to() == null ? DEFAULT_TO : request.to();
+
         var resources = new ArrayList<Map<String, Object>>();
         resources.add(patientFHIRMapper.toFHIR(patient));
 
         var records = request.includeEncounters()
-            ? recordRepository.findFHIRBundleRecords(request.patientId(), request.from(), request.to())
+            ? recordRepository.findFHIRBundleRecords(request.patientId(), from, to)
             : List.<ClinicalRecord>of();
         var recordIds = records.stream().map(ClinicalRecord::getId).toList();
 
@@ -85,7 +92,7 @@ public class FHIRBundleService {
         if (request.includeDiagnoses()) {
             List<ClinicalDiagnosis> diagnoses = request.includeEncounters()
                 ? recordIds.isEmpty() ? List.of() : diagnosisRepository.findActiveByClinicalRecordIdIn(recordIds)
-                : diagnosisRepository.findActiveFHIRBundleByPatient(request.patientId(), request.from(), request.to());
+                : diagnosisRepository.findActiveFHIRBundleByPatient(request.patientId(), from, to);
             diagnoses.stream()
                 .map(conditionFHIRMapper::toFHIR)
                 .forEach(resources::add);
@@ -94,14 +101,14 @@ public class FHIRBundleService {
         if (request.includePrescriptions()) {
             List<ClinicalPrescription> prescriptions = request.includeEncounters()
                 ? recordIds.isEmpty() ? List.of() : prescriptionRepository.findActiveByClinicalRecordIdIn(recordIds)
-                : prescriptionRepository.findActiveFHIRBundleByPatient(request.patientId(), request.from(), request.to());
+                : prescriptionRepository.findActiveFHIRBundleByPatient(request.patientId(), from, to);
             prescriptions.stream()
                 .map(medicationRequestFHIRMapper::toFHIR)
                 .forEach(resources::add);
         }
 
         if (request.includeDocuments()) {
-            documentRepository.findActiveFHIRBundleByPatient(request.patientId(), request.from(), request.to())
+            documentRepository.findActiveFHIRBundleByPatient(request.patientId(), from, to)
                 .stream()
                 .map(documentReferenceFHIRMapper::toFHIR)
                 .forEach(resources::add);

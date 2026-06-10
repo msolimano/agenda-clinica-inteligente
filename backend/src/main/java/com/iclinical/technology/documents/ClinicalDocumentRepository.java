@@ -28,8 +28,8 @@ public interface ClinicalDocumentRepository extends JpaRepository<ClinicalDocume
         from ClinicalDocument d
         where d.patientId = :patientId
           and d.status <> 'deleted'
-          and (:from is null or d.createdAt >= :from)
-          and (:to is null or d.createdAt <= :to)
+          and d.createdAt >= :from
+          and d.createdAt <= :to
         order by d.createdAt asc
         """)
     List<ClinicalDocument> findActiveFHIRBundleByPatient(

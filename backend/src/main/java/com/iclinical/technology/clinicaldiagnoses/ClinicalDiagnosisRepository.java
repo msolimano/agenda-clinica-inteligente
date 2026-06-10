@@ -31,8 +31,8 @@ public interface ClinicalDiagnosisRepository extends JpaRepository<ClinicalDiagn
         from ClinicalDiagnosis d
         where d.patientId = :patientId
           and d.status = 'active'
-          and (:from is null or d.createdAt >= :from)
-          and (:to is null or d.createdAt <= :to)
+          and d.createdAt >= :from
+          and d.createdAt <= :to
         order by d.createdAt asc
         """)
     List<ClinicalDiagnosis> findActiveFHIRBundleByPatient(
