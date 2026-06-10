@@ -11,11 +11,15 @@ import com.iclinical.technology.patients.Patient;
 import com.iclinical.technology.patients.PatientRepository;
 import com.iclinical.technology.professionals.Professional;
 import com.iclinical.technology.professionals.ProfessionalRepository;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -48,10 +52,36 @@ public class ClinicalRecordService {
         if (from != null && to != null && from.isAfter(to)) {
             throw new ClinicalRecordValidationException("Rango de fechas invalido");
         }
-        return recordRepository.findFiltered(patientId, professionalId, resolvedStatus, from, to)
+        return recordRepository.findAll(
+                filteredRecords(patientId, professionalId, resolvedStatus, from, to),
+                Sort.by(Sort.Order.desc("recordDate"), Sort.Order.desc("createdAt"))
+            )
             .stream()
             .map(this::toSummary)
             .toList();
+    }
+
+    private Specification<ClinicalRecord> filteredRecords(UUID patientId, UUID professionalId, String status, Instant from, Instant to) {
+        return (root, query, criteriaBuilder) -> {
+            var predicates = new ArrayList<Predicate>();
+            predicates.add(criteriaBuilder.notEqual(root.get("status"), "deleted"));
+            if (patientId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("patientId"), patientId));
+            }
+            if (professionalId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("professionalId"), professionalId));
+            }
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+            if (from != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("recordDate"), from));
+            }
+            if (to != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("recordDate"), to));
+            }
+            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+        };
     }
 
     @Transactional(readOnly = true)
