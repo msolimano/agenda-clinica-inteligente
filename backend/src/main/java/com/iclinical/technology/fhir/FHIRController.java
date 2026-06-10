@@ -1,5 +1,7 @@
 package com.iclinical.technology.fhir;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iclinical.technology.clinicaldiagnoses.ClinicalDiagnosisRepository;
 import com.iclinical.technology.clinicalprescriptions.ClinicalPrescriptionRepository;
 import com.iclinical.technology.clinicalrecords.ClinicalRecordRepository;
@@ -14,6 +16,7 @@ import com.iclinical.technology.fhir.patient.PatientFHIRMapper;
 import com.iclinical.technology.fhir.practitioner.PractitionerFHIRMapper;
 import com.iclinical.technology.patients.PatientRepository;
 import com.iclinical.technology.professionals.ProfessionalRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +37,7 @@ import java.util.UUID;
 public class FHIRController {
 
     public static final String FHIR_JSON = "application/fhir+json";
+    private static final DateTimeFormatter DOWNLOAD_FILENAME_TIMESTAMP = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").withZone(ZoneOffset.UTC);
 
     private final PatientRepository patientRepository;
     private final ProfessionalRepository professionalRepository;
@@ -46,6 +52,7 @@ public class FHIRController {
     private final MedicationRequestFHIRMapper medicationRequestFHIRMapper;
     private final DocumentReferenceFHIRMapper documentReferenceFHIRMapper;
     private final FHIRBundleService fhirBundleService;
+    private final ObjectMapper objectMapper;
 
     public FHIRController(
         PatientRepository patientRepository,
@@ -60,7 +67,8 @@ public class FHIRController {
         ConditionFHIRMapper conditionFHIRMapper,
         MedicationRequestFHIRMapper medicationRequestFHIRMapper,
         DocumentReferenceFHIRMapper documentReferenceFHIRMapper,
-        FHIRBundleService fhirBundleService
+        FHIRBundleService fhirBundleService,
+        ObjectMapper objectMapper
     ) {
         this.patientRepository = patientRepository;
         this.professionalRepository = professionalRepository;
@@ -75,8 +83,35 @@ public class FHIRController {
         this.medicationRequestFHIRMapper = medicationRequestFHIRMapper;
         this.documentReferenceFHIRMapper = documentReferenceFHIRMapper;
         this.fhirBundleService = fhirBundleService;
+        this.objectMapper = objectMapper;
     }
 
+    @GetMapping("/patients/{patientId}/bundle/download")
+    public ResponseEntity<String> patientBundleDownload(
+        @PathVariable UUID patientId,
+        @RequestParam(required = false) Instant from,
+        @RequestParam(required = false) Instant to,
+        @RequestParam(defaultValue = "true") boolean includeDocuments,
+        @RequestParam(defaultValue = "true") boolean includePrescriptions,
+        @RequestParam(defaultValue = "true") boolean includeDiagnoses,
+        @RequestParam(defaultValue = "true") boolean includeEncounters
+    ) throws JsonProcessingException {
+        var bundle = fhirBundleService.patientBundle(new FHIRBundleRequest(
+            patientId,
+            from,
+            to,
+            includeDocuments,
+            includePrescriptions,
+            includeDiagnoses,
+            includeEncounters
+        ));
+        var json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(bundle);
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(FHIR_JSON))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName(patientId) + "\"")
+            .header(HttpHeaders.CACHE_CONTROL, "no-store")
+            .body(json);
+    }
 
     @GetMapping("/patients/{patientId}/bundle")
     public ResponseEntity<Map<String, Object>> patientBundle(
@@ -150,6 +185,10 @@ public class FHIRController {
             .filter(item -> !"deleted".equals(item.getStatus()))
             .orElseThrow(() -> new FHIRResourceNotFoundException("DocumentReference no encontrado"));
         return fhirResponse(documentReferenceFHIRMapper.toFHIR(document));
+    }
+
+    private String downloadFileName(UUID patientId) {
+        return "iclinical-fhir-bundle-patient-" + patientId + "-" + DOWNLOAD_FILENAME_TIMESTAMP.format(Instant.now()) + ".json";
     }
 
     private ResponseEntity<Map<String, Object>> fhirResponse(Map<String, Object> body) {
