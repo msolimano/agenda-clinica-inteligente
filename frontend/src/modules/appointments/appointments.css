@@ -447,6 +447,230 @@
   color: var(--agenda-blue);
 }
 
+.appointment-document-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.appointment-document-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 27, 42, 0.56);
+  backdrop-filter: blur(4px);
+}
+
+.appointment-document-modal__panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(100%, 560px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  gap: 18px;
+  padding: 24px;
+  border: 1px solid var(--agenda-line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 28px 80px rgba(13, 27, 42, 0.26);
+}
+
+.appointment-document-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--agenda-line);
+  border-radius: 8px;
+  color: var(--agenda-blue);
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.appointment-document-modal__header {
+  display: flex;
+  gap: 12px;
+  padding-right: 40px;
+}
+
+.appointment-document-modal__icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--agenda-blue), var(--agenda-teal));
+}
+
+.appointment-document-modal__eyebrow {
+  margin: 0 0 4px;
+  color: var(--agenda-teal);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.appointment-document-modal__title {
+  margin: 0;
+  color: var(--agenda-navy);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.appointment-document-modal__subtitle {
+  margin: 6px 0 0;
+  color: var(--agenda-muted);
+  line-height: 1.45;
+}
+
+.appointment-document-modal__summary {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--agenda-line);
+  border-radius: 8px;
+  background: #f6f9fc;
+  color: var(--agenda-muted);
+  font-size: 0.9rem;
+}
+
+.appointment-document-modal__summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.appointment-document-modal__summary svg {
+  color: var(--agenda-teal);
+  flex: 0 0 auto;
+}
+
+.appointment-document-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.appointment-document-modal__actions--form,
+.appointment-document-modal__actions--success {
+  justify-content: flex-start;
+}
+
+.appointment-document-modal__primary,
+.appointment-document-modal__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.appointment-document-modal__primary {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--agenda-blue), var(--agenda-teal));
+}
+
+.appointment-document-modal__primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.appointment-document-modal__secondary {
+  border: 1px solid var(--agenda-line);
+  color: var(--agenda-blue);
+  background: #ffffff;
+}
+
+.appointment-document-form {
+  display: grid;
+  gap: 12px;
+}
+
+.appointment-document-form__alert {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #7b3f00;
+  background: #fff4e8;
+  font-weight: 700;
+}
+
+.appointment-document-form__field {
+  display: grid;
+  gap: 6px;
+  color: #24364b;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.appointment-document-form__field input,
+.appointment-document-form__field select,
+.appointment-document-form__field textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--agenda-line);
+  border-radius: 8px;
+  color: var(--agenda-navy);
+  background: #ffffff;
+}
+
+.appointment-document-form__field input,
+.appointment-document-form__field select {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.appointment-document-form__field input[type='file'] {
+  padding: 10px 12px;
+}
+
+.appointment-document-form__field textarea {
+  min-height: 84px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.appointment-document-modal__success {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(0, 183, 179, 0.28);
+  border-radius: 8px;
+  color: var(--agenda-ink);
+  background: rgba(0, 183, 179, 0.08);
+}
+
+.appointment-document-modal__success > svg {
+  color: var(--agenda-teal);
+}
+
+.appointment-document-modal__success h3 {
+  margin: 0;
+  color: var(--agenda-navy);
+  font-size: 1.05rem;
+}
+
+.appointment-document-modal__success p {
+  margin: 4px 0 0;
+  color: var(--agenda-muted);
+  line-height: 1.45;
+}
+
 @media (max-width: 1180px) {
   .appointments-page__header,
   .agenda-toolbar,
@@ -476,5 +700,23 @@
 
   .appointment-card__actions {
     flex-wrap: wrap;
+  }
+
+  .appointment-document-modal {
+    padding: 14px;
+  }
+
+  .appointment-document-modal__panel {
+    max-height: calc(100vh - 28px);
+    padding: 20px;
+  }
+
+  .appointment-document-modal__actions {
+    display: grid;
+  }
+
+  .appointment-document-modal__primary,
+  .appointment-document-modal__secondary {
+    width: 100%;
   }
 }

@@ -75,7 +75,8 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
                 listOrEmpty(result.mentioned_diagnoses()),
                 listOrEmpty(result.mentioned_medications()),
                 listOrEmpty(result.mentioned_allergies()),
-                nullToFallback(result.recommendations(), "Revisar el documento original y validar los hallazgos con un profesional de salud.")
+                nullToFallback(result.recommendations(), "Revisar el documento original y validar los hallazgos con un profesional de salud."),
+                insightListOrEmpty(result.insights())
             );
         } catch (RestClientResponseException exception) {
             throw providerException(
@@ -154,11 +155,31 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
         propertiesMap.put("mentioned_medications", Map.of("type", "array", "items", Map.of("type", "string")));
         propertiesMap.put("mentioned_allergies", Map.of("type", "array", "items", Map.of("type", "string")));
         propertiesMap.put("recommendations", Map.of("type", "string"));
+        propertiesMap.put("insights", Map.of("type", "array", "items", insightSchema()));
 
         return Map.of(
             "type", "object",
             "additionalProperties", false,
-            "required", List.of("clinical_summary", "relevant_findings", "mentioned_diagnoses", "mentioned_medications", "mentioned_allergies", "recommendations"),
+            "required", List.of("clinical_summary", "relevant_findings", "mentioned_diagnoses", "mentioned_medications", "mentioned_allergies", "recommendations", "insights"),
+            "properties", propertiesMap
+        );
+    }
+
+    private Map<String, Object> insightSchema() {
+        var propertiesMap = new LinkedHashMap<String, Object>();
+        propertiesMap.put("type", Map.of(
+            "type", "string",
+            "enum", List.of("clinical_summary", "clinical_alert", "diagnosis_candidate", "medication_candidate", "allergy_candidate", "risk_factor_candidate", "lab_result_candidate", "observation_candidate")
+        ));
+        propertiesMap.put("title", Map.of("type", "string"));
+        propertiesMap.put("description", Map.of("type", "string"));
+        propertiesMap.put("source_text", Map.of("type", List.of("string", "null")));
+        propertiesMap.put("confidence", Map.of("type", List.of("number", "null"), "minimum", 0, "maximum", 1));
+
+        return Map.of(
+            "type", "object",
+            "additionalProperties", false,
+            "required", List.of("type", "title", "description", "source_text", "confidence"),
             "properties", propertiesMap
         );
     }
@@ -255,6 +276,15 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
         return value == null ? List.of() : new ArrayList<>(value);
     }
 
+    private List<DocumentAIInsight> insightListOrEmpty(List<OpenAIClinicalInsight> value) {
+        if (value == null) {
+            return List.of();
+        }
+        return value.stream()
+            .map(item -> new DocumentAIInsight(item.type(), item.title(), item.description(), item.source_text(), item.confidence()))
+            .toList();
+    }
+
     private String nullToFallback(String value, String fallback) {
         return StringUtils.hasText(value) ? value.trim() : fallback;
     }
@@ -269,7 +299,17 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
         List<String> mentioned_diagnoses,
         List<String> mentioned_medications,
         List<String> mentioned_allergies,
-        String recommendations
+        String recommendations,
+        List<OpenAIClinicalInsight> insights
+    ) {
+    }
+
+    private record OpenAIClinicalInsight(
+        String type,
+        String title,
+        String description,
+        String source_text,
+        Double confidence
     ) {
     }
 }

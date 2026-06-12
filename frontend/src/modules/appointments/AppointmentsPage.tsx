@@ -13,6 +13,7 @@ import {
 } from './appointmentsApi';
 import { addDays, dateFromInput, endOfDay, startOfDay, startOfWeek, toDateInputValue } from './appointmentsDate';
 import { AgendaToolbar } from './AgendaToolbar';
+import { AppointmentDocumentUploadModal } from './AppointmentDocumentUploadModal';
 import { AppointmentForm } from './AppointmentForm';
 import { CalendarDayView } from './CalendarDayView';
 import { CalendarWeekView } from './CalendarWeekView';
@@ -33,6 +34,7 @@ export function AppointmentsPage({ onBackToLogin }: AppointmentsPageProps) {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [slots, setSlots] = useState<AppointmentSlot[]>([]);
   const [reschedulingAppointment, setReschedulingAppointment] = useState<Appointment | undefined>();
+  const [createdAppointmentForDocuments, setCreatedAppointmentForDocuments] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,7 +96,8 @@ export function AppointmentsPage({ onBackToLogin }: AppointmentsPageProps) {
   async function handleCreate(payload: AppointmentPayload) {
     setError(null);
     try {
-      await createAppointment(payload);
+      const createdAppointment = await createAppointment(payload);
+      setCreatedAppointmentForDocuments(createdAppointment);
       await loadAgenda();
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible reservar la cita');
@@ -213,6 +216,13 @@ export function AppointmentsPage({ onBackToLogin }: AppointmentsPageProps) {
           </section>
         </aside>
       </section>
+
+      {createdAppointmentForDocuments ? (
+        <AppointmentDocumentUploadModal
+          appointment={createdAppointmentForDocuments}
+          onClose={() => setCreatedAppointmentForDocuments(null)}
+        />
+      ) : null}
     </main>
   );
 }

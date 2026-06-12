@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getAIAnalysis, listDocumentAnalyses, requestDocumentAnalysis, retryAIAnalysis } from './documentsApi';
 import { DocumentAnalysisAction } from './DocumentAnalysisAction';
+import { DocumentClinicalInsightsPanel } from './DocumentClinicalInsightsPanel';
 import { DocumentAnalysisResult } from './DocumentAnalysisResult';
 import { DocumentAnalysisRetryButton } from './DocumentAnalysisRetryButton';
+import { DocumentPreconsultationSummaryPanel } from './DocumentPreconsultationSummaryPanel';
 import { DocumentAnalysisStatusBadge } from './DocumentAnalysisStatusBadge';
 import type { AIAnalysis, AIAnalysisDocumentStatus, AIAnalysisSummary } from './documents.types';
 
@@ -34,6 +36,7 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, aiConsentActi
   const [selectedAnalysis, setSelectedAnalysis] = useState<AIAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [insightsRefreshKey, setInsightsRefreshKey] = useState(0);
 
   const latestAnalysis = useMemo(() => analyses[0], [analyses]);
   const status = normalizeStatus(latestAnalysis?.status ?? initialStatus);
@@ -67,6 +70,7 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, aiConsentActi
       const response = await requestDocumentAnalysis(documentId);
       setSelectedAnalysis(response.status === 'completed' ? response : null);
       await loadAnalyses();
+      setInsightsRefreshKey((current) => current + 1);
       await onStatusChange();
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible solicitar análisis IA');
@@ -90,6 +94,7 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, aiConsentActi
       const response = await retryAIAnalysis(latestAnalysis.id);
       setSelectedAnalysis(response.status === 'completed' ? response : null);
       await loadAnalyses();
+      setInsightsRefreshKey((current) => current + 1);
       await onStatusChange();
     } catch (currentError) {
       setError(currentError instanceof Error ? currentError.message : 'No fue posible reintentar análisis IA');
@@ -112,6 +117,8 @@ export function DocumentAnalysisPanel({ documentId, initialStatus, aiConsentActi
       {error ? <div className="document-analysis-panel__error" role="alert">{error}</div> : null}
       {latestAnalysis?.status === 'failed' ? <p className="document-analysis-panel__note">{latestAnalysis.errorMessage ?? 'El análisis falló.'}</p> : null}
       {selectedAnalysis ? <DocumentAnalysisResult analysis={selectedAnalysis} /> : null}
+      {selectedAnalysis ? <DocumentPreconsultationSummaryPanel analysis={selectedAnalysis} documentId={documentId} refreshKey={insightsRefreshKey} /> : null}
+      <DocumentClinicalInsightsPanel documentId={documentId} refreshKey={insightsRefreshKey} />
     </section>
   );
 }

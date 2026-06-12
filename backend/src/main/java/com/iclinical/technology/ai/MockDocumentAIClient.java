@@ -42,7 +42,30 @@ class MockDocumentAIClient implements DocumentAIClient {
             List.of("Diagnosticos mencionados no disponibles en analisis simulado"),
             List.of("Medicamentos mencionados no disponibles en analisis simulado"),
             List.of("Alergias mencionadas no disponibles en analisis simulado"),
-            "Revisar el documento original y validar todo hallazgo con criterio clinico. Este resultado no constituye diagnostico medico ni indicacion terapeutica."
+            "Revisar el documento original y validar todo hallazgo con criterio clinico. Este resultado no constituye diagnostico medico ni indicacion terapeutica.",
+            List.of(
+                new DocumentAIInsight(
+                    "clinical_summary",
+                    "Resumen documental preliminar",
+                    "Documento cargado para revision clinica. No se pudo extraer contenido estructurado en esta version.",
+                    title,
+                    0.62
+                ),
+                new DocumentAIInsight(
+                    "clinical_alert",
+                    "Requiere revision profesional",
+                    "La informacion del documento debe ser contrastada con anamnesis, examen fisico e historia clinica antes de tomar decisiones.",
+                    type,
+                    0.58
+                ),
+                new DocumentAIInsight(
+                    "observation_candidate",
+                    "Observacion sugerida",
+                    "Registrar en ficha solo si el profesional confirma que el contenido del documento es clinicamente relevante.",
+                    title,
+                    0.54
+                )
+            )
         );
     }
 

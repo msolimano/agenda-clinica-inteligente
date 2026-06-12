@@ -2,6 +2,7 @@ package com.iclinical.technology.ai;
 
 import com.iclinical.technology.ai.dto.AIAnalysisResponse;
 import com.iclinical.technology.ai.dto.AIAnalysisSummaryResponse;
+import com.iclinical.technology.clinicalinsights.ClinicalInsightService;
 import com.iclinical.technology.consents.AIConsentService;
 import com.iclinical.technology.documents.ClinicalDocument;
 import com.iclinical.technology.documents.ClinicalDocumentRepository;
@@ -27,17 +28,20 @@ public class AIAnalysisService {
     private final ClinicalDocumentRepository documentRepository;
     private final DocumentAIClient documentAIClient;
     private final AIConsentService consentService;
+    private final ClinicalInsightService insightService;
 
     public AIAnalysisService(
         AIAnalysisRepository analysisRepository,
         ClinicalDocumentRepository documentRepository,
         DocumentAIClient documentAIClient,
-        AIConsentService consentService
+        AIConsentService consentService,
+        ClinicalInsightService insightService
     ) {
         this.analysisRepository = analysisRepository;
         this.documentRepository = documentRepository;
         this.documentAIClient = documentAIClient;
         this.consentService = consentService;
+        this.insightService = insightService;
     }
 
     @Transactional
@@ -125,6 +129,7 @@ public class AIAnalysisService {
             analysis.setCompletedAt(Instant.now());
             analysis.setStatus("completed");
             document.setAiAnalysisStatus("completed");
+            createInsights(analysis, document, result);
         } catch (DocumentAIProviderException exception) {
             applyProviderFailure(analysis, exception);
             analysis.setCompletedAt(Instant.now());
@@ -141,6 +146,15 @@ public class AIAnalysisService {
             analysis.setCompletedAt(Instant.now());
             analysis.setStatus("failed");
             document.setAiAnalysisStatus("failed");
+        }
+    }
+
+
+    private void createInsights(AIAnalysis analysis, ClinicalDocument document, DocumentAIResult result) {
+        try {
+            insightService.createFromAnalysis(analysis, document, result.insights());
+        } catch (RuntimeException ignored) {
+            // Insight generation must not break document analysis or document storage.
         }
     }
 

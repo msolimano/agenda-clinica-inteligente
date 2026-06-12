@@ -18,3 +18,4 @@ frontend/.vite/
 # IDE
 .idea/
 .vscode/
+backend/storage/

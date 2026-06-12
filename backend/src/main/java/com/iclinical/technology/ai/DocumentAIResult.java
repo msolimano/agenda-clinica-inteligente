@@ -19,6 +19,7 @@ public record DocumentAIResult(
     List<String> mentionedDiagnoses,
     List<String> mentionedMedications,
     List<String> mentionedAllergies,
-    String recommendations
+    String recommendations,
+    List<DocumentAIInsight> insights
 ) {
 }
