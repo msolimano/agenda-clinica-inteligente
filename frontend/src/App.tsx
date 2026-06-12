@@ -108,7 +108,7 @@ function App() {
           <img className="login-page__logo" src="/logo.png" alt="Logo I-Clinical Technology" />
         </div>
 
-        <p className="login-page__eyebrow">Information Clinical Technology</p>
+        <p className="login-page__eyebrow">Integrated Clinical Platform</p>
         <h1 className="login-page__title">I-Clinical Technology</h1>
         <p className="login-page__slogan">Conectando información clínica con inteligencia</p>
 

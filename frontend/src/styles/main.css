@@ -78,15 +78,18 @@ input {
   margin-bottom: 28px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 0 34px rgba(0, 183, 179, 0.22),
+    0 24px 70px rgba(0, 0, 0, 0.22);
 }
 
 .login-page__logo {
   display: block;
-  width: 108px;
-  max-height: 72px;
+  width: 124px;
+  max-height: 84px;
   object-fit: contain;
+  filter: drop-shadow(0 0 16px rgba(0, 183, 179, 0.35)) saturate(1.08) contrast(1.08);
 }
 
 .login-page__eyebrow {
@@ -318,12 +321,14 @@ input {
   background: rgba(255, 255, 255, 0.08);
   cursor: pointer;
   text-align: left;
-  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.quick-access__item:hover {
-  border-color: rgba(0, 183, 179, 0.62);
-  background: rgba(255, 255, 255, 0.13);
+.quick-access__item:hover,
+.quick-access__item:focus-visible {
+  border-color: rgba(0, 183, 179, 0.78);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 3px rgba(0, 183, 179, 0.16), 0 18px 34px rgba(0, 0, 0, 0.18);
   transform: translateY(-1px);
 }
 
@@ -392,8 +397,8 @@ input {
   }
 
   .login-page__logo {
-    width: 92px;
-    max-height: 62px;
+    width: 106px;
+    max-height: 72px;
   }
 
   .login-page__slogan {
