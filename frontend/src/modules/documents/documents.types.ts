@@ -26,6 +26,7 @@ export interface ProfessionalOption {
 export type AIAnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'reviewed' | 'rejected' | 'deleted';
 export type AIAnalysisDocumentStatus = AIAnalysisStatus | 'not_requested';
 export type AIConsentStatus = 'active' | 'revoked' | 'deleted' | 'not_requested';
+export type TextExtractionStatus = 'not_requested' | 'completed' | 'failed' | 'unsupported' | 'empty';
 
 
 export interface AIProviderStatus {
@@ -105,6 +106,11 @@ export interface AIAnalysisSummary {
   totalTokenCount: number | null;
   latencyMs: number | null;
   providerErrorCode: string | null;
+  textExtractionStatus: TextExtractionStatus | null;
+  textExtractionMethod: string | null;
+  textExtractionConfidence: number | null;
+  extractedTextPreview: string | null;
+  textExtractionErrorMessage: string | null;
   clinicalSummary: string | null;
   errorMessage: string | null;
   createdAt: string;

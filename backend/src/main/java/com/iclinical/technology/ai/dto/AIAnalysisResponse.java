@@ -1,5 +1,6 @@
 package com.iclinical.technology.ai.dto;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -21,6 +22,11 @@ public record AIAnalysisResponse(
     Integer totalTokenCount,
     Integer latencyMs,
     String providerErrorCode,
+    String textExtractionStatus,
+    String textExtractionMethod,
+    BigDecimal textExtractionConfidence,
+    String extractedTextPreview,
+    String textExtractionErrorMessage,
     String clinicalSummary,
     List<String> relevantFindings,
     List<String> mentionedDiagnoses,

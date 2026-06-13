@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,24 @@ public class AIAnalysis {
 
     @Column(name = "source_summary", columnDefinition = "text")
     private String sourceSummary;
+
+    @Column(name = "extracted_text", columnDefinition = "text")
+    private String extractedText;
+
+    @Column(name = "extracted_text_preview", columnDefinition = "text")
+    private String extractedTextPreview;
+
+    @Column(name = "text_extraction_status", length = 40)
+    private String textExtractionStatus = "not_requested";
+
+    @Column(name = "text_extraction_method", length = 80)
+    private String textExtractionMethod;
+
+    @Column(name = "text_extraction_confidence", precision = 5, scale = 4)
+    private BigDecimal textExtractionConfidence;
+
+    @Column(name = "text_extraction_error_message", columnDefinition = "text")
+    private String textExtractionErrorMessage;
 
     @Column(name = "result_summary", columnDefinition = "text")
     private String resultSummary;
@@ -189,6 +208,18 @@ public class AIAnalysis {
     public void setProviderMetadata(Map<String, Object> providerMetadata) { this.providerMetadata = providerMetadata; }
     public String getSourceSummary() { return sourceSummary; }
     public void setSourceSummary(String sourceSummary) { this.sourceSummary = sourceSummary; }
+    public String getExtractedText() { return extractedText; }
+    public void setExtractedText(String extractedText) { this.extractedText = extractedText; }
+    public String getExtractedTextPreview() { return extractedTextPreview; }
+    public void setExtractedTextPreview(String extractedTextPreview) { this.extractedTextPreview = extractedTextPreview; }
+    public String getTextExtractionStatus() { return textExtractionStatus; }
+    public void setTextExtractionStatus(String textExtractionStatus) { this.textExtractionStatus = textExtractionStatus; }
+    public String getTextExtractionMethod() { return textExtractionMethod; }
+    public void setTextExtractionMethod(String textExtractionMethod) { this.textExtractionMethod = textExtractionMethod; }
+    public BigDecimal getTextExtractionConfidence() { return textExtractionConfidence; }
+    public void setTextExtractionConfidence(BigDecimal textExtractionConfidence) { this.textExtractionConfidence = textExtractionConfidence; }
+    public String getTextExtractionErrorMessage() { return textExtractionErrorMessage; }
+    public void setTextExtractionErrorMessage(String textExtractionErrorMessage) { this.textExtractionErrorMessage = textExtractionErrorMessage; }
     public String getResultSummary() { return resultSummary; }
     public void setResultSummary(String resultSummary) { this.resultSummary = resultSummary; }
     public String getClinicalSummary() { return clinicalSummary; }

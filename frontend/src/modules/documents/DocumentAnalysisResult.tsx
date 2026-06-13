@@ -20,11 +20,20 @@ function BulletList({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+function extractionLabel(status: string | null) {
+  if (status === 'completed') return 'Texto extraído correctamente';
+  if (status === 'unsupported') return 'Documento no soportado para OCR';
+  if (status === 'empty') return 'Sin texto detectable';
+  if (status === 'failed') return 'Error de OCR';
+  return 'No solicitado';
+}
+
 export function DocumentAnalysisResult({ analysis }: DocumentAnalysisResultProps) {
   const providerLabel = analysis.providerName === 'openai' ? 'OpenAI' : analysis.providerName === 'mock' ? 'Mock' : 'No informado';
   const modelLabel = analysis.modelName ?? 'No informado';
   const promptLabel = analysis.promptVersion ?? 'No informado';
   const latencyLabel = analysis.latencyMs == null ? 'No informado' : `${analysis.latencyMs} ms`;
+  const extractionConfidence = analysis.textExtractionConfidence == null ? null : `${Math.round(analysis.textExtractionConfidence * 100)}%`;
 
   return (
     <section className="document-analysis-result" aria-label="Resultado de análisis IA">
@@ -38,7 +47,22 @@ export function DocumentAnalysisResult({ analysis }: DocumentAnalysisResultProps
         <span>Modelo: {modelLabel}</span>
         <span>Prompt: {promptLabel}</span>
         <span>Latencia: {latencyLabel}</span>
+        <span>OCR: {extractionLabel(analysis.textExtractionStatus)}{extractionConfidence ? ` (${extractionConfidence})` : ''}</span>
       </div>
+
+      {analysis.textExtractionErrorMessage ? (
+        <div className="document-analysis-result__group">
+          <h4>Extracción de texto</h4>
+          <p>{analysis.textExtractionErrorMessage}</p>
+        </div>
+      ) : null}
+
+      {analysis.extractedTextPreview ? (
+        <div className="document-analysis-result__group">
+          <h4>Texto extraído preview</h4>
+          <p>{analysis.extractedTextPreview}</p>
+        </div>
+      ) : null}
 
       <div className="document-analysis-result__group">
         <h4>Resumen clínico</h4>

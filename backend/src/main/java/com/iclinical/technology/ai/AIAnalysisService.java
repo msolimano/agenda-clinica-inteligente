@@ -2,6 +2,8 @@ package com.iclinical.technology.ai;
 
 import com.iclinical.technology.ai.dto.AIAnalysisResponse;
 import com.iclinical.technology.ai.dto.AIAnalysisSummaryResponse;
+import com.iclinical.technology.ai.extraction.DocumentTextExtractionResult;
+import com.iclinical.technology.ai.extraction.DocumentTextExtractionService;
 import com.iclinical.technology.clinicalinsights.ClinicalInsightService;
 import com.iclinical.technology.consents.AIConsentService;
 import com.iclinical.technology.documents.ClinicalDocument;
@@ -29,19 +31,22 @@ public class AIAnalysisService {
     private final DocumentAIClient documentAIClient;
     private final AIConsentService consentService;
     private final ClinicalInsightService insightService;
+    private final DocumentTextExtractionService textExtractionService;
 
     public AIAnalysisService(
         AIAnalysisRepository analysisRepository,
         ClinicalDocumentRepository documentRepository,
         DocumentAIClient documentAIClient,
         AIConsentService consentService,
-        ClinicalInsightService insightService
+        ClinicalInsightService insightService,
+        DocumentTextExtractionService textExtractionService
     ) {
         this.analysisRepository = analysisRepository;
         this.documentRepository = documentRepository;
         this.documentAIClient = documentAIClient;
         this.consentService = consentService;
         this.insightService = insightService;
+        this.textExtractionService = textExtractionService;
     }
 
     @Transactional
@@ -123,8 +128,10 @@ public class AIAnalysisService {
         analysis.setStatus("processing");
         analysis.setStartedAt(Instant.now());
         document.setAiAnalysisStatus("processing");
+        var extraction = textExtractionService.extract(document);
+        applyTextExtraction(analysis, extraction);
         try {
-            var result = documentAIClient.analyze(document);
+            var result = documentAIClient.analyze(new DocumentAIRequest(document, extraction));
             applyProviderResult(analysis, result);
             analysis.setCompletedAt(Instant.now());
             analysis.setStatus("completed");
@@ -147,6 +154,16 @@ public class AIAnalysisService {
             analysis.setStatus("failed");
             document.setAiAnalysisStatus("failed");
         }
+    }
+
+
+    private void applyTextExtraction(AIAnalysis analysis, DocumentTextExtractionResult extraction) {
+        analysis.setExtractedText(extraction.text());
+        analysis.setExtractedTextPreview(extraction.preview());
+        analysis.setTextExtractionStatus(extraction.status());
+        analysis.setTextExtractionMethod(extraction.method());
+        analysis.setTextExtractionConfidence(extraction.confidence());
+        analysis.setTextExtractionErrorMessage(extraction.errorMessage());
     }
 
 
@@ -243,6 +260,11 @@ public class AIAnalysisService {
             analysis.getTotalTokenCount(),
             analysis.getLatencyMs(),
             analysis.getProviderErrorCode(),
+            analysis.getTextExtractionStatus(),
+            analysis.getTextExtractionMethod(),
+            analysis.getTextExtractionConfidence(),
+            analysis.getExtractedTextPreview(),
+            analysis.getTextExtractionErrorMessage(),
             analysis.getClinicalSummary(),
             nullToEmpty(analysis.getRelevantFindings()),
             nullToEmpty(analysis.getMentionedDiagnoses()),
@@ -274,6 +296,11 @@ public class AIAnalysisService {
             analysis.getTotalTokenCount(),
             analysis.getLatencyMs(),
             analysis.getProviderErrorCode(),
+            analysis.getTextExtractionStatus(),
+            analysis.getTextExtractionMethod(),
+            analysis.getTextExtractionConfidence(),
+            analysis.getExtractedTextPreview(),
+            analysis.getTextExtractionErrorMessage(),
             analysis.getClinicalSummary(),
             analysis.getErrorMessage(),
             analysis.getCreatedAt(),

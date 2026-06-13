@@ -27,8 +27,9 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
     }
 
     @Override
-    public DocumentAIResult analyze(ClinicalDocument document) {
+    public DocumentAIResult analyze(DocumentAIRequest request) {
         var started = System.nanoTime();
+        var document = request.document();
         validateConfiguration(started);
         validateDocument(document, started);
 
@@ -42,7 +43,7 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
                 .uri("/responses")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + properties.getOpenai().getApiKey())
-                .body(requestBody(document))
+                .body(requestBody(request))
                 .retrieve()
                 .body(JsonNode.class);
 
@@ -114,11 +115,19 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
         }
     }
 
-    private Map<String, Object> requestBody(ClinicalDocument document) {
-        var userPrompt = "Analiza exclusivamente la informacion disponible del documento clinico. "
-            + "No infieras datos no presentes. Fuente disponible en este sprint: metadata del documento, sin OCR ni extraccion de contenido binario. "
+    private Map<String, Object> requestBody(DocumentAIRequest request) {
+        var document = request.document();
+        var extraction = request.textExtraction();
+        var extractedText = request.extractedText();
+        var extractionStatus = extraction == null ? "not_requested" : extraction.status();
+        var extractionMessage = extraction == null ? null : extraction.errorMessage();
+        var userPrompt = "Analiza exclusivamente la informacion presente en el documento clinico. "
+            + "No infieras datos no presentes. No crees diagnosticos, prescripciones, tratamientos ni modificaciones automaticas de ficha clinica. "
             + "Titulo: " + clean(document.getTitle()) + ". Tipo: " + clean(document.getDocumentType()) + ". Archivo: " + clean(document.getOriginalFilename())
-            + ". MIME: " + clean(document.getMimeType()) + ". Tamano bytes: " + (document.getFileSizeBytes() == null ? 0 : document.getFileSizeBytes()) + ".";
+            + ". MIME: " + clean(document.getMimeType()) + ". Tamano bytes: " + (document.getFileSizeBytes() == null ? 0 : document.getFileSizeBytes()) + ". "
+            + "Estado de extraccion de texto: " + clean(extractionStatus) + ". "
+            + (StringUtils.hasText(extractionMessage) ? "Mensaje de extraccion: " + clean(extractionMessage) + ". " : "")
+            + "Texto extraido para analisis: " + extractedTextForPrompt(extractedText) + ".";
 
         return Map.of(
             "model", properties.getOpenai().getModel(),
@@ -144,7 +153,17 @@ class OpenAIDocumentAIClient implements DocumentAIClient {
     private String systemPrompt() {
         return "Eres un asistente clinico documental para I-Clinical Technology. Devuelve solo JSON valido segun el esquema. "
             + "No entregues diagnostico definitivo, no indiques tratamiento automatico y no inventes informacion. "
+            + "Toda sugerencia debe quedar pendiente de revision profesional. "
             + "Todo resultado debe ser revisado por un profesional de salud.";
+    }
+
+    private String extractedTextForPrompt(String text) {
+        if (!StringUtils.hasText(text)) {
+            return "No fue posible extraer texto clinico estructurado del documento.";
+        }
+        var cleaned = clean(text);
+        var maxLength = 12_000;
+        return cleaned.length() <= maxLength ? cleaned : cleaned.substring(0, maxLength);
     }
 
     private Map<String, Object> responseSchema() {
